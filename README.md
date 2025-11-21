@@ -1,5 +1,3 @@
-<img src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/frontend/src/assets/Logo/Logo-Full-Light.png' />
-
 # StudyX - Full Stack Ed-Tech Platform 📚
 
 ## Project Description 📝
@@ -43,28 +41,6 @@ npm install
 
 Create `.env` files in both backend and frontend directories:
 
-**Backend (.env):**
-```env
-PORT=5000
-DATABASE_URL=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-CLOUD_NAME=your_cloudinary_cloud_name
-API_KEY=your_cloudinary_api_key
-API_SECRET=your_cloudinary_api_secret
-MAIL_HOST=smtp-relay.brevo.com
-MAIL_USER=your_smtp_user
-MAIL_PASS=your_smtp_password
-MAIL_FROM=your_email@gmail.com
-RAZORPAY_KEY=your_razorpay_key
-RAZORPAY_SECRET=your_razorpay_secret
-FRONTEND_URL=http://localhost:5173
-```
-
-**Frontend (.env):**
-```env
-VITE_APP_BASE_URL=http://localhost:5000/api/v1
-VITE_APP_RAZORPAY_KEY=your_razorpay_key
-```
 
 5. **Run the Application**
 
@@ -92,7 +68,6 @@ npm run dev
 - Frontend: http://localhost:5173
 - Backend: http://localhost:5000
 
-📖 **For detailed setup instructions, see [QUICK_START.md](./QUICK_START.md)**
 
 <hr/>
 
@@ -260,85 +235,6 @@ Utilized several React hooks for efficient state management and dynamic behavior
 - 🔄 **Swiper:**  Modern touch slider for mobile and desktop browsers.
 - 🖋️ **React Type Animation:**  Simple and configurable typing animation component for React.
 - 🎥 **Video React:**  React-based video player for building rich multimedia experiences in web applications.
-
-
-
-##  🖥️ Screen Preview :
-
-# Random Home Page Background 🏠 
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/home3.png' />
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/home4.png' />
-
-# About Page
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/about.png' />
-
-# Contact Page
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/contact.png' />
-
-# Forgot passwornd
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/forgot%20pass.png' />
-
-# Dashboard
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/dashboard.png' />
-
-# Edit Profile
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/edit%20profile.png' />
-
-
-# Add Course
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/add%20course.png' />
-
-# Edit Course
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/edit%20course.png' />
-
-# Course Details 1
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/course%20details1.png' />
-
-# Course Details 2
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/course%20details2.png' />
-
-# Add Review
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/add%20review.png' />
-
-# Cart1
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/cart1.png' />
-
-
-
-
-# Enrolled Courses 1
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/enrolled%20courses1.png' />
-
-# Enrolled Courses 2
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/enrolled%20courses2.png' />
-
-# Instructor Data 1
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/instrctor%20data1.png' />
-
-# Instructor Data 2
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/instrctor%20data2.png' />
-
-# My Courses 1
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/myCourses1.png' />
-
-# My Courses 2
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/myCourses2.png' />
-
-# View Courses 1
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/view%20course1.png' />
-
-# View Courses 2
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/view%20course2.png' />
-
-
-# Delete Account
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/delete%20account.png' />
-
-# Footer
-<img width='100%' src='https://github.com/Aniruddha-Gade/Study-Notion-EdTech__MERN-Stack/blob/main/screenshots/footer.png' />
-
-
-
 
 
 
