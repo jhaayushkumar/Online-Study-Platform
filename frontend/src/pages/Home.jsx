@@ -22,6 +22,9 @@ import { motion } from 'framer-motion'
 import { fadeIn, } from './../components/common/motionFrameVarients';
 
 // background random images
+import videoUrl from '../assets/Images/banner.mp4'
+import backgroundImg from '../assets/Images/bghome.svg'
+import techStackGif from '../assets/Images/tech-stack.gif'
 import backgroundImg1 from '../assets/Images/random bg img/coding bg1.jpg'
 import backgroundImg2 from '../assets/Images/random bg img/coding bg2.jpg'
 import backgroundImg3 from '../assets/Images/random bg img/coding bg3.jpg'
@@ -103,8 +106,8 @@ const Home = () => {
                 {/*Section1  */}
                 <div className='relative h-[450px] md:h-[550px] justify-center mx-auto flex flex-col w-11/12 max-w-maxContent items-center text-white '>
 
-                    <Link to={"/signup"}>
-                        <div className='z-0 group p-1 mx-auto rounded-full bg-richblack-800 font-bold text-richblack-200
+                    <Link to={"/signup?accountType=Instructor"}>
+                        <div className='z-10 group p-1 mx-auto rounded-full bg-richblack-800 font-bold text-richblack-200
                                         transition-all duration-200 hover:scale-95 w-fit'>
                             <div className='flex flex-row items-center gap-2 rounded-full px-10 py-[5px]
                               transition-all duration-200 group-hover:bg-richblack-900'>

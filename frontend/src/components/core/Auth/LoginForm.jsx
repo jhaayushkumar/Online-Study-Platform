@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
 
 import { login } from "../../../services/operations/authAPI"
+import GoogleLoginButton from "./GoogleLoginButton"
 
 function LoginForm() {
   const navigate = useNavigate();
@@ -85,13 +86,27 @@ function LoginForm() {
         </Link>
       </label>
 
-
       <button
         type="submit"
         className="mt-6 rounded-[8px] bg-yellow-50 py-[8px] px-[12px] font-medium text-richblack-900"
       >
         Sign In
       </button>
+
+      {/* Divider */}
+      <div className="flex items-center my-4">
+        <div className="flex-1 border-t border-richblack-700"></div>
+        <span className="px-4 text-sm text-richblack-400">OR</span>
+        <div className="flex-1 border-t border-richblack-700"></div>
+      </div>
+
+      {/* Google Login Button */}
+      {/* Assuming GoogleLoginButton is a component that needs to be defined or imported */}
+      {/* For demonstration, using a placeholder div */}
+      <div className="flex items-center justify-center gap-x-2 rounded-md border border-richblack-700 bg-richblack-800 px-3 py-2 text-richblack-100 font-medium cursor-pointer">
+        {/* You would typically place a Google icon here */}
+        <span>Sign in with Google</span>
+      </div>
     </form>
   )
 }

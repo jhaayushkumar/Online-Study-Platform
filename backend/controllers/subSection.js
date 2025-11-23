@@ -2,6 +2,13 @@ const Section = require('../models/section');
 const SubSection = require('../models/subSection');
 const { uploadImageToCloudinary } = require('../utils/imageUploader');
 
+// Helper function to convert seconds to MM:SS format
+const formatDuration = (durationInSeconds) => {
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = Math.floor(durationInSeconds % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
+
 
 
 // ================ create SubSection ================
@@ -27,7 +34,7 @@ exports.createSubSection = async (req, res) => {
 
         // create entry in DB
         const SubSectionDetails = await SubSection.create(
-            { title, timeDuration: videoFileDetails.duration, description, videoUrl: videoFileDetails.secure_url })
+            { title, timeDuration: formatDuration(videoFileDetails.duration), description, videoUrl: videoFileDetails.secure_url });
 
         // link subsection id to section
         // Update the corresponding section with the newly created sub-section
@@ -94,7 +101,7 @@ exports.updateSubSection = async (req, res) => {
             const video = req.files.videoFile;
             const uploadDetails = await uploadImageToCloudinary(video, process.env.FOLDER_NAME);
             subSection.videoUrl = uploadDetails.secure_url;
-            subSection.timeDuration = uploadDetails.duration;
+            subSection.timeDuration = formatDuration(uploadDetails.duration);
         }
 
         // save data to DB

@@ -9,6 +9,8 @@ const {
     changePassword
 } = require('../controllers/auth');
 
+const { googleLogin } = require('../controllers/googleAuth');
+
 // Resetpassword controllers
 const {
     resetPasswordToken,
@@ -31,6 +33,9 @@ router.post('/signup', signup);
 
 // Route for user login
 router.post('/login', login);
+
+// Route for Google OAuth login
+router.post('/google-login', googleLogin);
 
 // Route for sending OTP to the user's email
 router.post('/sendotp', sendOTP);

@@ -17,7 +17,7 @@ export default function ChipInput({ label, name, placeholder, register, errors, 
       setChips(course?.tag)
     }
 
-    register(name, { required: true, validate: (value) => value.length > 0 }, chips);
+    register(name, { required: true, validate: (value) => value.length > 0 });
   }, [])
 
   // "Updates value whenever 'chips' is modified
