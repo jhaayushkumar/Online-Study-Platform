@@ -117,7 +117,10 @@ function Catalog() {
                 </div>
                 <div>
                     <Course_Slider
-                        Courses={catalogPageData?.selectedCategory?.courses}
+                        Courses={active === 1
+                            ? catalogPageData?.selectedCategory?.courses
+                            : catalogPageData?.mostSellingCourses
+                        }
                     />
                 </div>
             </div>

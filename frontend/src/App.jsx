@@ -14,7 +14,7 @@ import Contact from "./pages/Contact";
 import PageNotFound from "./pages/PageNotFound";
 import CourseDetails from './pages/CourseDetails';
 import Catalog from './pages/Catalog';
- 
+
 import Navbar from "./components/common/Navbar"
 
 import OpenRoute from "./components/core/Auth/OpenRoute"
@@ -58,6 +58,18 @@ function App() {
     window.scrollTo(0, 0);
   }, [])
 
+  // One-time migration: Clean malformed tokens (wrapped in quotes from JSON.stringify)
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && token.startsWith('"') && token.endsWith('"')) {
+      // Token is malformed (has quotes from JSON.stringify)
+      console.log("🔧 Cleaning malformed token - please login again");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      // User will be redirected to login by ProtectedRoute
+    }
+  }, [])
+
 
   // Go upward arrow - show , unshow
   const [showArrow, setShowArrow] = useState(false)
@@ -90,7 +102,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
-        <Route path="catalog/:catalogName" element={<Catalog />} />
+        <Route path="catalog/:catalogName" element={
+          <ProtectedRoute>
+            <Catalog />
+          </ProtectedRoute>
+        } />
         <Route path="courses/:courseId" element={<CourseDetails />} />
 
         {/* Open Route - for Only Non Logged in User */}

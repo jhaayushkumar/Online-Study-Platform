@@ -67,7 +67,7 @@ const Home = () => {
 
     // get courses data
     const [CatalogPageData, setCatalogPageData] = useState(null);
-    const categoryID = "691f71c0aaa2df6d4a328cfb" // Web Development category
+    const categoryID = "6920363015bc915e72fc9c2b" // Web Development category
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -138,11 +138,11 @@ const Home = () => {
 
 
                     <div className='flex flex-row gap-7 mt-8'>
-                        <CTAButton active={true} linkto={"/signup"}>
+                        <CTAButton active={true} linkto={"/about"}>
                             Learn More
                         </CTAButton>
 
-                        <CTAButton active={false} linkto={"/login"}>
+                        <CTAButton active={false} linkto={"/contact"}>
                             Book a Demo
                         </CTAButton>
                     </div>
@@ -167,14 +167,14 @@ const Home = () => {
                             ctabtn1={
                                 {
                                     btnText: "try it yourself",
-                                    linkto: "/signup",
+                                    link: "/catalog/web-development",
                                     active: true,
                                 }
                             }
                             ctabtn2={
                                 {
                                     btnText: "learn more",
-                                    linkto: "/login",
+                                    link: "/about",
                                     active: false,
                                 }
                             }
@@ -245,7 +245,7 @@ const Home = () => {
                                         <FaArrowRight />
                                     </div>
                                 </CTAButton>
-                                <CTAButton active={false} linkto={"/signup"}>
+                                <CTAButton active={false} linkto={"/about"}>
                                     <div>
                                         Learn more
                                     </div>
