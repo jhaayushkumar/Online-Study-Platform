@@ -1,10 +1,16 @@
 const express = require('express');
 const router = express.Router();
 
-const { capturePayment, verifyPayment } = require('../controllers/payments');
+const {
+    createRazorpayOrder,
+    verifyRazorpayPayment,
+    checkPaymentStatus
+} = require('../controllers/payments');
 const { auth, isAdmin, isInstructor, isStudent } = require('../middleware/auth');
 
-router.post('/capturePayment', auth, isStudent, capturePayment);
-router.post('/verifyPayment', auth, isStudent, verifyPayment);
+// Razorpay QR payment routes
+router.post('/createRazorpayOrder', auth, isStudent, createRazorpayOrder);
+router.post('/verifyRazorpayPayment', auth, isStudent, verifyRazorpayPayment);
+router.get('/checkPaymentStatus/:orderId', auth, isStudent, checkPaymentStatus);
 
 module.exports = router

@@ -1,4 +1,4 @@
-const stripe = require('../config/stripe');
+const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const mailSender = require('../utils/mailSender');
 const { courseEnrollmentEmail } = require('../mail/templates/courseEnrollmentEmail');
@@ -11,131 +11,16 @@ const CourseProgress = require("../models/courseProgress")
 
 const { default: mongoose } = require('mongoose')
 
-
-// ================ capture the payment and Initiate the 'Stripe payment' ================
-exports.capturePayment = async (req, res) => {
-
-    // extract courseId & userId
-    const { coursesId } = req.body;
-    // console.log('coursesId = ', typeof (coursesId))
-    // console.log('coursesId = ', coursesId)
-
-    const userId = req.user.id;
-
-
-    if (coursesId.length === 0) {
-        return res.json({ success: false, message: "Please provide Course Id" });
-    }
-
-    let totalAmount = 0;
-
-    for (const course_id of coursesId) {
-        let course;
-        try {
-            // valid course Details
-            course = await Course.findById(course_id);
-            if (!course) {
-                return res.status(404).json({ success: false, message: "Could not find the course" });
-            }
-
-            // check user already enrolled the course
-            const uid = new mongoose.Types.ObjectId(userId);
-            if (course.studentsEnrolled.includes(uid)) {
-                return res.status(400).json({ success: false, message: "Student is already Enrolled" });
-            }
-
-            totalAmount += course.price;
-        }
-        catch (error) {
-            console.log(error);
-            return res.status(500).json({ success: false, message: error.message });
-        }
-    }
-
-    // create order
-    const currency = "INR";
-    const options = {
-        amount: totalAmount * 100,
-        currency,
-        receipt: Math.random(Date.now()).toString(),
-    }
-
-    // initiate payment using Stripe
-    try {
-        const paymentIntent = await stripe.instance.paymentIntents.create({
-            amount: totalAmount * 100, // amount in cents
-            currency: 'inr',
-            automatic_payment_methods: {
-                enabled: true,
-            },
-            metadata: {
-                userId: userId,
-                coursesId: JSON.stringify(coursesId)
-            },
-            // For demo: auto-confirm the payment
-            confirm: true,
-            payment_method: 'pm_card_visa', // Test payment method
-            return_url: `${process.env.FRONTEND_URL}/dashboard/enrolled-courses`,
-        });
-        
-        console.log('✅ Payment Intent Created:', paymentIntent.id);
-        console.log('💰 Amount:', totalAmount, 'INR');
-        console.log('👤 User ID:', userId);
-        console.log('📚 Courses:', coursesId);
-        
-        // return response
-        res.status(200).json({
-            success: true,
-            clientSecret: paymentIntent.client_secret,
-            paymentIntentId: paymentIntent.id,
-            message: 'Payment initiated successfully'
-        })
-    }
-    catch (error) {
-        console.log('❌ Payment Error:', error.message);
-        return res.status(500).json({ success: false, message: "Could not Initiate Order", error: error.message });
-    }
-
-}
+// Initialize Razorpay
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_SECRET
+});
 
 
 
-// ================ verify the payment ================
-exports.verifyPayment = async (req, res) => {
-    const { paymentIntentId, coursesId } = req.body;
-    const userId = req.user.id;
+// ================ Razorpay QR Code Payment ================
 
-    console.log('🔍 Verifying Payment...');
-    console.log('Payment Intent ID:', paymentIntentId);
-    console.log('Courses:', coursesId);
-    console.log('User ID:', userId);
-
-    if (!paymentIntentId || !coursesId || !userId) {
-        return res.status(400).json({ success: false, message: "Payment Failed, data not found" });
-    }
-
-    try {
-        // Retrieve payment intent from Stripe to verify
-        const paymentIntent = await stripe.instance.paymentIntents.retrieve(paymentIntentId);
-        
-        console.log('💳 Payment Status:', paymentIntent.status);
-
-        // Check if payment was successful
-        if (paymentIntent.status === 'succeeded' || paymentIntent.status === 'requires_capture') {
-            console.log('✅ Payment verified! Enrolling student...');
-            //enroll student
-            await enrollStudents(coursesId, userId, res);
-            //return res
-            return res.status(200).json({ success: true, message: "Payment Verified and Enrollment Successful" });
-        } else {
-            console.log('❌ Payment not completed. Status:', paymentIntent.status);
-            return res.status(400).json({ success: false, message: `Payment not completed. Status: ${paymentIntent.status}` });
-        }
-    } catch (error) {
-        console.log('❌ Payment verification error:', error.message);
-        return res.status(500).json({ success: false, message: "Payment verification failed", error: error.message });
-    }
-}
 
 
 // ================ enroll Students to course after payment ================
@@ -290,3 +175,176 @@ exports.sendPaymentSuccessEmail = async (req, res) => {
 //         });
 //     }
 // }
+
+
+// ================ Razorpay QR Code Payment ================
+
+// Create Razorpay Order for QR Payment
+exports.createRazorpayOrder = async (req, res) => {
+    const { coursesId } = req.body;
+    const userId = req.user.id;
+
+    console.log('🎯 Creating Razorpay Order for QR Payment');
+    console.log('Courses:', coursesId);
+    console.log('User ID:', userId);
+
+    if (!coursesId || coursesId.length === 0) {
+        return res.json({ success: false, message: "Please provide Course Id" });
+    }
+
+    let totalAmount = 0;
+    let courseNames = [];
+
+    for (const course_id of coursesId) {
+        try {
+            const course = await Course.findById(course_id);
+            if (!course) {
+                return res.status(404).json({ success: false, message: "Could not find the course" });
+            }
+
+            // Check if already enrolled
+            const uid = new mongoose.Types.ObjectId(userId);
+            if (course.studentsEnrolled.includes(uid)) {
+                return res.status(400).json({ success: false, message: "Student is already Enrolled" });
+            }
+
+            totalAmount += course.price;
+            courseNames.push(course.courseName);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ success: false, message: error.message });
+        }
+    }
+
+    try {
+        // Create Razorpay order
+        const options = {
+            amount: totalAmount * 100, // amount in paise
+            currency: 'INR',
+            receipt: `receipt_${Date.now()}`,
+            notes: {
+                userId: userId,
+                coursesId: JSON.stringify(coursesId),
+                courseNames: courseNames.join(', ')
+            }
+        };
+
+        const order = await razorpay.orders.create(options);
+
+        console.log('✅ Razorpay Order Created:', order.id);
+        console.log('💰 Amount:', totalAmount, 'INR');
+
+        // Get user details for UPI intent
+        const user = await User.findById(userId);
+
+        // Create UPI intent string for QR code
+        const upiIntent = `upi://pay?pa=${process.env.UPI_ID || 'merchant@upi'}&pn=StudyX&am=${totalAmount}&cu=INR&tn=${encodeURIComponent('Course Payment - ' + courseNames.join(', '))}&tr=${order.id}`;
+
+        res.status(200).json({
+            success: true,
+            orderId: order.id,
+            amount: totalAmount,
+            currency: 'INR',
+            upiIntent: upiIntent,
+            courseNames: courseNames,
+            message: 'Razorpay order created successfully'
+        });
+
+    } catch (error) {
+        console.log('❌ Razorpay Order Error:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Could not create Razorpay order",
+            error: error.message
+        });
+    }
+};
+
+
+// Verify Razorpay Payment
+exports.verifyRazorpayPayment = async (req, res) => {
+    const { orderId, paymentId, signature } = req.body;
+    const userId = req.user.id;
+
+    console.log('🔍 Verifying Razorpay Payment...');
+    console.log('Order ID:', orderId);
+    console.log('Payment ID:', paymentId);
+    console.log('User ID:', userId);
+
+    if (!orderId || !paymentId || !signature) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing payment details"
+        });
+    }
+
+    try {
+        // Verify signature
+        const generatedSignature = crypto
+            .createHmac('sha256', process.env.RAZORPAY_SECRET)
+            .update(orderId + '|' + paymentId)
+            .digest('hex');
+
+        if (generatedSignature !== signature) {
+            console.log('❌ Invalid payment signature');
+            return res.status(400).json({
+                success: false,
+                message: "Payment verification failed - Invalid signature"
+            });
+        }
+
+        // Fetch order details to get course IDs
+        const order = await razorpay.orders.fetch(orderId);
+        const coursesId = JSON.parse(order.notes.coursesId);
+
+        console.log('✅ Payment signature verified!');
+        console.log('📚 Enrolling in courses:', coursesId);
+
+        // Enroll student
+        await enrollStudents(coursesId, userId, res);
+
+        return res.status(200).json({
+            success: true,
+            message: "Payment Verified and Enrollment Successful"
+        });
+
+    } catch (error) {
+        console.log('❌ Razorpay verification error:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Payment verification failed",
+            error: error.message
+        });
+    }
+};
+
+
+// Check Payment Status (for polling)
+exports.checkPaymentStatus = async (req, res) => {
+    const { orderId } = req.params;
+
+    try {
+        const order = await razorpay.orders.fetch(orderId);
+
+        // Fetch payments for this order
+        const payments = await razorpay.orders.fetchPayments(orderId);
+
+        const isPaid = payments.items && payments.items.length > 0 &&
+            payments.items[0].status === 'captured';
+
+        res.status(200).json({
+            success: true,
+            isPaid: isPaid,
+            orderStatus: order.status,
+            paymentDetails: isPaid ? payments.items[0] : null
+        });
+
+    } catch (error) {
+        console.log('❌ Status check error:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Could not check payment status",
+            error: error.message
+        });
+    }
+};

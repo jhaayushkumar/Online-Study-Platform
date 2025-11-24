@@ -11,9 +11,12 @@ import Footer from "../components/common/Footer"
 import RatingStars from "../components/common/RatingStars"
 import CourseAccordionBar from "../components/core/Course/CourseAccordionBar"
 import CourseDetailsCard from "../components/core/Course/CourseDetailsCard"
+// import StripeCheckout from "../components/core/Course/StripeCheckout"
+import QRPaymentModal from "../components/core/Course/QRPaymentModal"
 import { formatDate } from "../services/formatDate"
 import { fetchCourseDetails } from "../services/operations/courseDetailsAPI"
 import { buyCourse } from "../services/operations/studentFeaturesAPI"
+// import { buyCourse, completePayment } from "../services/operations/studentFeaturesAPI"
 
 import GetAvgRating from "../utils/avgRating"
 import { ACCOUNT_TYPE } from './../utils/constants';
@@ -43,6 +46,8 @@ function CourseDetails() {
   // Declear a state to save the course details
   const [response, setResponse] = useState(null)
   const [confirmationModal, setConfirmationModal] = useState(null)
+  const [showQRModal, setShowQRModal] = useState(false)
+  const [paymentData, setPaymentData] = useState(null)
 
   useEffect(() => {
     // Calling fetchCourseDetails fucntion to fetch the details
@@ -136,13 +141,46 @@ function CourseDetails() {
     tag
   } = response?.data?.courseDetails
 
-  // Buy Course handler
-  const handleBuyCourse = () => {
+  // Buy Course handler - Using Razorpay QR Payment
+  const handleBuyCourse = async () => {
     if (token) {
-      const coursesId = [courseId]
-      buyCourse(token, coursesId, user, navigate, dispatch)
+      const toastLoadingId = toast.loading("Creating payment order...")
+
+      try {
+        const coursesId = [courseId]
+
+        // Create Razorpay order
+        const response = await fetch(`${import.meta.env.VITE_APP_BASE_URL}/payment/createRazorpayOrder`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ coursesId })
+        })
+
+        const data = await response.json()
+
+        toast.dismiss(toastLoadingId)
+
+        if (data.success) {
+          console.log('Payment Response:', data)
+
+          // Show QR payment modal
+          setPaymentData(data)
+          setShowQRModal(true)
+        } else {
+          toast.error(data.message || "Could not create payment order")
+        }
+      } catch (error) {
+        toast.dismiss(toastLoadingId)
+        console.error("Payment error:", error)
+        toast.error("Could not initiate payment. Please try again.")
+      }
+
       return
     }
+
     setConfirmationModal({
       text1: "You are not logged in!",
       text2: "Please login to Purchase Course.",
@@ -207,7 +245,7 @@ function CourseDetails() {
                 <span>{`(${ratingAndReviews.length} reviews)`}</span>
                 <span>{`${studentsEnrolled.length} students enrolled`}</span>
               </div>
-              <p className="capitalize "> Created By <span className="font-semibold underline">{instructor.firstName} {instructor.lastName}</span></p>
+              <p className="capitalize "> Created By <span className="font-semibold underline">{instructor?.firstName} {instructor?.lastName}</span></p>
               <div className="flex flex-wrap gap-5 text-lg">
                 <p className="flex items-center gap-2">
                   {" "}
@@ -307,12 +345,12 @@ function CourseDetails() {
               <p className="text-[28px] font-semibold">Author</p>
               <div className="flex items-center gap-4 py-4">
                 <Img
-                  src={instructor.image}
+                  src={instructor?.image}
                   alt="Author"
                   className="h-14 w-14 rounded-full object-cover"
                 />
                 <div>
-                  <p className="text-lg capitalize flex items-center gap-2 font-semibold">{`${instructor.firstName} ${instructor.lastName}`}
+                  <p className="text-lg capitalize flex items-center gap-2 font-semibold">{`${instructor?.firstName} ${instructor?.lastName}`}
                     <span><MdOutlineVerified className='w-5 h-5 text-[#00BFFF]' /></span>
                   </p>
                   <p className="text-richblack-50">{instructor?.additionalDetails?.about}</p>
@@ -325,6 +363,15 @@ function CourseDetails() {
 
       <Footer />
       {confirmationModal && <ConfirmationModal modalData={confirmationModal} />}
+      {showQRModal && paymentData && (
+        <QRPaymentModal
+          onClose={() => setShowQRModal(false)}
+          amount={paymentData.amount}
+          courseName={paymentData.courseNames?.join(', ') || courseName}
+          orderId={paymentData.orderId}
+          upiIntent={paymentData.upiIntent}
+        />
+      )}
     </>
   )
 }
