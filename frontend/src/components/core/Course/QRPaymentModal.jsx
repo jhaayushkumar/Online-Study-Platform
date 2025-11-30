@@ -160,3 +160,4 @@ const QRPaymentModal = ({ onClose, amount, courseName, orderId, upiIntent }) => 
 };
 
 export default QRPaymentModal;
+

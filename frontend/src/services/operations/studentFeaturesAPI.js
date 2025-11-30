@@ -25,37 +25,54 @@ function loadScript(src) {
 
 // ================ buyCourse ================ 
 export async function buyCourse(token, coursesId, userDetails, navigate, dispatch) {
-    const toastId = toast.loading("Processing payment...");
+    const toastId = toast.loading("Initializing payment...");
 
     try {
-        // initiate the payment
+        // Initiate the payment and get client secret
         const paymentResponse = await apiConnector("POST", COURSE_PAYMENT_API,
             { coursesId },
             {
                 Authorization: `Bearer ${token}`,
             })
-        
+
         if (!paymentResponse.data.success) {
             throw new Error(paymentResponse.data.message);
         }
 
         console.log("Payment Response:", paymentResponse.data);
-
-        const { paymentIntentId } = paymentResponse.data;
-
-        // For demo purposes, directly verify the payment
-        // In production, you would integrate Stripe Elements or Checkout
         toast.dismiss(toastId);
-        toast.success("Processing enrollment...");
-        
-        await verifyPayment({ paymentIntentId, coursesId }, token, navigate, dispatch);
+
+        const { clientSecret, paymentIntentId } = paymentResponse.data;
+
+        // Return client secret for Stripe checkout
+        // The actual payment will be handled by StripeCheckout component
+        return {
+            success: true,
+            clientSecret,
+            paymentIntentId,
+            coursesId
+        };
 
     }
     catch (error) {
         console.log("PAYMENT API ERROR.....", error);
-        toast.error(error.response?.data?.message || "Could not process payment");
+        toast.dismiss(toastId);
+        toast.error(error.response?.data?.message || "Could not initialize payment");
+        return { success: false, error };
     }
-    toast.dismiss(toastId);
+}
+
+// ================ Complete Payment after Stripe confirmation ================
+export async function completePayment(paymentIntentId, coursesId, token, navigate, dispatch) {
+    const toastId = toast.loading("Completing enrollment...");
+
+    try {
+        await verifyPayment({ paymentIntentId, coursesId }, token, navigate, dispatch);
+        toast.dismiss(toastId);
+    } catch (error) {
+        toast.dismiss(toastId);
+        toast.error("Enrollment failed");
+    }
 }
 
 
