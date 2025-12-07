@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react"
 import { BiInfoCircle } from "react-icons/bi"
 import { HiOutlineGlobeAlt } from "react-icons/hi"
-// import { ReactMarkdown } from "react-markdown/lib/react-markdown"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -11,12 +10,11 @@ import Footer from "../components/common/Footer"
 import RatingStars from "../components/common/RatingStars"
 import CourseAccordionBar from "../components/core/Course/CourseAccordionBar"
 import CourseDetailsCard from "../components/core/Course/CourseDetailsCard"
-// import StripeCheckout from "../components/core/Course/StripeCheckout"
+import PaymentMethodModal from "../components/core/Course/PaymentMethodModal"
 import QRPaymentModal from "../components/core/Course/QRPaymentModal"
 import { formatDate } from "../services/formatDate"
 import { fetchCourseDetails } from "../services/operations/courseDetailsAPI"
 import { buyCourse } from "../services/operations/studentFeaturesAPI"
-// import { buyCourse, completePayment } from "../services/operations/studentFeaturesAPI"
 
 import GetAvgRating from "../utils/avgRating"
 import { ACCOUNT_TYPE } from './../utils/constants';
@@ -41,11 +39,11 @@ function CourseDetails() {
 
   // Getting courseId from url parameter
   const { courseId } = useParams()
-  // console.log(`course id: ${courseId}`)
 
-  // Declear a state to save the course details
+  // Declare a state to save the course details
   const [response, setResponse] = useState(null)
   const [confirmationModal, setConfirmationModal] = useState(null)
+  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false)
   const [showQRModal, setShowQRModal] = useState(false)
   const [paymentData, setPaymentData] = useState(null)
 
@@ -141,43 +139,10 @@ function CourseDetails() {
     tag
   } = response?.data?.courseDetails
 
-  // Buy Course handler - Using Razorpay QR Payment
-  const handleBuyCourse = async () => {
+  // Buy Course handler - Show payment method selection
+  const handleBuyCourse = () => {
     if (token) {
-      const toastLoadingId = toast.loading("Creating payment order...")
-
-      try {
-        const coursesId = [courseId]
-
-        // Create Razorpay order
-        const response = await fetch(`${import.meta.env.VITE_APP_BASE_URL}/payment/createRazorpayOrder`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ coursesId })
-        })
-
-        const data = await response.json()
-
-        toast.dismiss(toastLoadingId)
-
-        if (data.success) {
-          console.log('Payment Response:', data)
-
-          // Show QR payment modal
-          setPaymentData(data)
-          setShowQRModal(true)
-        } else {
-          toast.error(data.message || "Could not create payment order")
-        }
-      } catch (error) {
-        toast.dismiss(toastLoadingId)
-        console.error("Payment error:", error)
-        toast.error("Could not initiate payment. Please try again.")
-      }
-
+      setShowPaymentMethodModal(true)
       return
     }
 
@@ -189,6 +154,79 @@ function CourseDetails() {
       btn1Handler: () => navigate("/login"),
       btn2Handler: () => setConfirmationModal(null),
     })
+  }
+
+  // Handle Card Payment (Stripe)
+  const handleCardPayment = async () => {
+    setShowPaymentMethodModal(false)
+    const toastLoadingId = toast.loading("Creating checkout session...")
+
+    try {
+      const coursesId = [courseId]
+
+      // Create Stripe checkout session
+      const response = await fetch(`${import.meta.env.VITE_APP_BASE_URL}/payment/createStripeCheckout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ coursesId })
+      })
+
+      const data = await response.json()
+
+      toast.dismiss(toastLoadingId)
+
+      if (data.success && data.checkoutUrl) {
+        console.log('Redirecting to Stripe Checkout:', data.checkoutUrl)
+        // Redirect to Stripe Checkout
+        window.location.href = data.checkoutUrl
+      } else {
+        toast.error(data.message || "Could not create checkout session")
+      }
+    } catch (error) {
+      toast.dismiss(toastLoadingId)
+      console.error("Payment error:", error)
+      toast.error("Could not initiate payment. Please try again.")
+    }
+  }
+
+  // Handle UPI/QR Payment
+  const handleUPIPayment = async () => {
+    setShowPaymentMethodModal(false)
+    const toastLoadingId = toast.loading("Generating UPI payment...")
+
+    try {
+      const coursesId = [courseId]
+
+      // Create UPI payment order
+      const response = await fetch(`${import.meta.env.VITE_APP_BASE_URL}/payment/createUPIOrder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ coursesId })
+      })
+
+      const data = await response.json()
+
+      toast.dismiss(toastLoadingId)
+
+      if (data.success) {
+        console.log('UPI Payment Data:', data)
+        // Show QR payment modal
+        setPaymentData(data)
+        setShowQRModal(true)
+      } else {
+        toast.error(data.message || "Could not create UPI payment")
+      }
+    } catch (error) {
+      toast.dismiss(toastLoadingId)
+      console.error("UPI payment error:", error)
+      toast.error("Could not initiate UPI payment. Please try again.")
+    }
   }
 
   // Add to cart Course handler
@@ -363,6 +401,13 @@ function CourseDetails() {
 
       <Footer />
       {confirmationModal && <ConfirmationModal modalData={confirmationModal} />}
+      {showPaymentMethodModal && (
+        <PaymentMethodModal
+          onClose={() => setShowPaymentMethodModal(false)}
+          onSelectCard={handleCardPayment}
+          onSelectUPI={handleUPIPayment}
+        />
+      )}
       {showQRModal && paymentData && (
         <QRPaymentModal
           onClose={() => setShowQRModal(false)}

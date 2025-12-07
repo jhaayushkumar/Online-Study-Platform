@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@sendinblue/client": "^3.3.1",
     "bcrypt": "^5.1.1",
     "cloudinary": "^1.40.0",
     "cookie-parser": "^1.4.6",
@@ -16,7 +17,8 @@
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
     "otp-generator": "^4.0.1",
-    "razorpay": "^2.9.6"
+    "razorpay": "^2.9.6",
+    "stripe": "^20.0.0"
   },
   "name": "backend",
   "version": "1.0.0",

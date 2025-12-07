@@ -14,6 +14,8 @@ import Contact from "./pages/Contact";
 import PageNotFound from "./pages/PageNotFound";
 import CourseDetails from './pages/CourseDetails';
 import Catalog from './pages/Catalog';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancel from './pages/PaymentCancel';
 
 import Navbar from "./components/common/Navbar"
 
@@ -108,6 +110,8 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="courses/:courseId" element={<CourseDetails />} />
+        <Route path="payment-success" element={<PaymentSuccess />} />
+        <Route path="payment-cancel" element={<PaymentCancel />} />
 
         {/* Open Route - for Only Non Logged in User */}
         <Route

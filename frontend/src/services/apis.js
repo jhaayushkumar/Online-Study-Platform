@@ -19,8 +19,8 @@ export const profileEndpoints = {
 
 // STUDENTS ENDPOINTS
 export const studentEndpoints = {
-  COURSE_PAYMENT_API: BASE_URL + "/payment/capturePayment",
-  COURSE_VERIFY_API: BASE_URL + "/payment/verifyPayment",
+  STRIPE_CHECKOUT_API: BASE_URL + "/payment/createStripeCheckout",
+  STRIPE_VERIFY_API: BASE_URL + "/payment/verifyStripePayment",
   SEND_PAYMENT_SUCCESS_EMAIL_API: BASE_URL + "/payment/sendPaymentSuccessEmail",
 }
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "react-hot-toast"
 
 import CountryCode from '../../../../data/countrycode.json'
-// import { apiConnector } from "../../../services/apiConnector"
-// import { contactusEndpoint } from "../../../services/apis"
+import { apiConnector } from "../../../services/apiConnector"
+import { contactusEndpoint } from "../../../services/apis"
 
 
 const ContactUsForm = () => {
@@ -16,28 +17,31 @@ const ContactUsForm = () => {
   } = useForm()
 
   const submitContactForm = async (data) => {
-    // console.log("Form Data - ", data)
+    const toastId = toast.loading("Sending message...");
     try {
       setLoading(true)
-      // const res = await apiConnector(
-      //   "POST",
-      //   contactusEndpoint.CONTACT_US_API,
-      //   data
-      // )
-      // console.log("Email Res - ", res)
+      const res = await apiConnector(
+        "POST",
+        contactusEndpoint.CONTACT_US_API,
+        data
+      )
+      console.log("Contact form response:", res)
+      toast.success("Message sent successfully! We'll get back to you soon.")
       setLoading(false)
     } catch (error) {
-      console.log("ERROR WHILE CONATACT US  - ", error.message)
+      console.log("ERROR WHILE CONTACT US - ", error.message)
+      toast.error(error?.response?.data?.message || "Failed to send message. Please try again.")
       setLoading(false)
     }
+    toast.dismiss(toastId)
   }
 
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset({
         email: "",
-        firstname: "",
-        lastname: "",
+        firstName: "",
+        lastName: "",
         message: "",
         phoneNo: "",
       })
@@ -51,35 +55,35 @@ const ContactUsForm = () => {
     >
       <div className="flex flex-col gap-5 lg:flex-row">
         <div className="flex flex-col gap-2 lg:w-[48%]">
-          <label htmlFor="firstname" className="lable-style">
+          <label htmlFor="firstName" className="lable-style">
             First Name
           </label>
           <input
             type="text"
-            name="firstname"
-            id="firstname"
+            name="firstName"
+            id="firstName"
             placeholder="Enter first name"
             className="form-style"
-            {...register("firstname", { required: true })}
+            {...register("firstName", { required: true })}
           />
-          {errors.firstname && (
+          {errors.firstName && (
             <span className="-mt-1 text-[12px] text-yellow-100">
               Please enter your name.
             </span>
           )}
         </div>
-        
+
         <div className="flex flex-col gap-2 lg:w-[48%]">
-          <label htmlFor="lastname" className="lable-style">
+          <label htmlFor="lastName" className="lable-style">
             Last Name
           </label>
           <input
             type="text"
-            name="lastname"
-            id="lastname"
+            name="lastName"
+            id="lastName"
             placeholder="Enter last name"
             className="form-style"
-            {...register("lastname")}
+            {...register("lastName")}
           />
         </div>
       </div>
