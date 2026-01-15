@@ -86,6 +86,8 @@ const GoogleLoginButton = ({ accountType }) => {
         const googleBtn = googleButtonRef.current?.querySelector('div[role="button"]');
         if (googleBtn) {
             googleBtn.click();
+        } else {
+            console.error('Google button not found');
         }
     };
 
@@ -100,7 +102,7 @@ const GoogleLoginButton = ({ accountType }) => {
                 <span>Continue with Google</span>
             </button>
             
-            <div ref={googleButtonRef} className="absolute opacity-0 pointer-events-none h-0 overflow-hidden">
+            <div ref={googleButtonRef} className="absolute opacity-0 h-0 w-0 overflow-hidden" style={{ pointerEvents: 'auto' }}>
                 <GoogleLogin
                     onSuccess={handleSuccess}
                     onError={handleError}
