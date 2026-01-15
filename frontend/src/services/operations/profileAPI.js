@@ -1,3 +1,14 @@
+/**
+ * @file profileAPI.js
+ * @description Profile API operations for user profile management
+ * @module services/operations/profileAPI
+ * 
+ * Handles all profile-related API calls including fetching user details,
+ * getting enrolled courses for students, and retrieving instructor dashboard
+ * data. Manages loading states and error handling with toast notifications
+ * for user feedback on profile operations.
+ */
+
 import { toast } from "react-hot-toast"
 
 import { setLoading, setUser } from "../../slices/profileSlice"

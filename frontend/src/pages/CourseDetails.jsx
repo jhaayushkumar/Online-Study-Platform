@@ -1,3 +1,13 @@
+/**
+ * @file CourseDetails.jsx
+ * @description Course details page showing full course information and purchase options
+ * @module pages/CourseDetails
+ * 
+ * Displays comprehensive course information including description, curriculum,
+ * instructor details, ratings, and pricing. Handles course purchase flow with
+ * Stripe card payments and UPI/QR code options. Shows enrollment status and
+ * allows adding courses to cart for logged-in users.
+ */
 
 import React, { useEffect, useState } from "react"
 import { BiInfoCircle } from "react-icons/bi"

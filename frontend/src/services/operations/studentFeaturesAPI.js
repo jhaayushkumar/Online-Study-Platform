@@ -1,119 +1,133 @@
+/**
+ * @file studentFeaturesAPI.js
+ * @description Student payment API operations for the StudyX frontend
+ * @module services/operations/studentFeaturesAPI
+ * 
+ * Handles course purchase flow using Stripe payment gateway.
+ * Creates checkout sessions, redirects to Stripe, verifies payments,
+ * and manages course enrollment after successful payment.
+ */
+
 import { toast } from "react-hot-toast";
 import { studentEndpoints } from "../apis";
 import { apiConnector } from "../apiConnector";
-import rzpLogo from "../../assets/Logo/rzp_logo.png"
 import { setPaymentLoading } from "../../slices/courseSlice";
 import { resetCart } from "../../slices/cartSlice";
 
+const { 
+    STRIPE_CHECKOUT_API, 
+    STRIPE_VERIFY_API, 
+    SEND_PAYMENT_SUCCESS_EMAIL_API 
+} = studentEndpoints;
 
-const { COURSE_PAYMENT_API, COURSE_VERIFY_API, SEND_PAYMENT_SUCCESS_EMAIL_API } = studentEndpoints;
-
-function loadScript(src) {
-    return new Promise((resolve) => {
-        const script = document.createElement("script");
-        script.src = src;
-
-        script.onload = () => {
-            resolve(true);
-        }
-        script.onerror = () => {
-            resolve(false);
-        }
-        document.body.appendChild(script);
-    })
-}
-
-// ================ buyCourse ================ 
-export async function buyCourse(token, coursesId, userDetails, navigate, dispatch) {
+// ================ Create Stripe Checkout Session ================
+export async function createStripeCheckout(token, coursesId) {
     const toastId = toast.loading("Initializing payment...");
+    let result = null;
 
     try {
-        // Initiate the payment and get client secret
-        const paymentResponse = await apiConnector("POST", COURSE_PAYMENT_API,
+        const response = await apiConnector(
+            "POST",
+            STRIPE_CHECKOUT_API,
             { coursesId },
-            {
-                Authorization: `Bearer ${token}`,
-            })
+            { Authorization: `Bearer ${token}` }
+        );
 
-        if (!paymentResponse.data.success) {
-            throw new Error(paymentResponse.data.message);
-        }
-
-        console.log("Payment Response:", paymentResponse.data);
-        toast.dismiss(toastId);
-
-        const { clientSecret, paymentIntentId } = paymentResponse.data;
-
-        // Return client secret for Stripe checkout
-        // The actual payment will be handled by StripeCheckout component
-        return {
-            success: true,
-            clientSecret,
-            paymentIntentId,
-            coursesId
-        };
-
-    }
-    catch (error) {
-        console.log("PAYMENT API ERROR.....", error);
-        toast.dismiss(toastId);
-        toast.error(error.response?.data?.message || "Could not initialize payment");
-        return { success: false, error };
-    }
-}
-
-// ================ Complete Payment after Stripe confirmation ================
-export async function completePayment(paymentIntentId, coursesId, token, navigate, dispatch) {
-    const toastId = toast.loading("Completing enrollment...");
-
-    try {
-        await verifyPayment({ paymentIntentId, coursesId }, token, navigate, dispatch);
-        toast.dismiss(toastId);
-    } catch (error) {
-        toast.dismiss(toastId);
-        toast.error("Enrollment failed");
-    }
-}
-
-
-// ================ send Payment Success Email ================
-async function sendPaymentSuccessEmail(response, amount, token) {
-    try {
-        await apiConnector("POST", SEND_PAYMENT_SUCCESS_EMAIL_API, {
-            orderId: response.razorpay_order_id,
-            paymentId: response.razorpay_payment_id,
-            amount,
-        }, {
-            Authorization: `Bearer ${token}`
-        })
-    }
-    catch (error) {
-        console.log("PAYMENT SUCCESS EMAIL ERROR....", error);
-    }
-}
-
-
-// ================ verify payment ================
-async function verifyPayment(bodyData, token, navigate, dispatch) {
-    const toastId = toast.loading("Verifying Payment....");
-    dispatch(setPaymentLoading(true));
-
-    try {
-        const response = await apiConnector("POST", COURSE_VERIFY_API, bodyData, {
-            Authorization: `Bearer ${token}`,
-        })
+        console.log("STRIPE CHECKOUT RESPONSE:", response);
 
         if (!response.data.success) {
             throw new Error(response.data.message);
         }
-        toast.success("payment Successful, you are addded to the course");
-        navigate("/dashboard/enrolled-courses");
+
+        result = response.data;
+        toast.dismiss(toastId);
+    } catch (error) {
+        console.log("STRIPE CHECKOUT ERROR:", error);
+        toast.dismiss(toastId);
+        toast.error(error.response?.data?.message || "Could not initialize payment");
+    }
+
+    return result;
+}
+
+// ================ Verify Stripe Payment ================
+export async function verifyStripePayment(token, sessionId, navigate, dispatch) {
+    const toastId = toast.loading("Verifying payment...");
+    dispatch(setPaymentLoading(true));
+
+    try {
+        const response = await apiConnector(
+            "POST",
+            STRIPE_VERIFY_API,
+            { sessionId },
+            { Authorization: `Bearer ${token}` }
+        );
+
+        console.log("STRIPE VERIFY RESPONSE:", response);
+
+        if (!response.data.success) {
+            throw new Error(response.data.message);
+        }
+
+        toast.dismiss(toastId);
+        toast.success("Payment successful! You are now enrolled.");
         dispatch(resetCart());
+        navigate("/dashboard/enrolled-courses");
+        return true;
+    } catch (error) {
+        console.log("STRIPE VERIFY ERROR:", error);
+        toast.dismiss(toastId);
+        toast.error(error.response?.data?.message || "Payment verification failed");
+        return false;
+    } finally {
+        dispatch(setPaymentLoading(false));
     }
-    catch (error) {
-        console.log("PAYMENT VERIFY ERROR....", error);
-        toast.error("Could not verify Payment");
+}
+
+// ================ Buy Course (Redirect to Stripe) ================
+export async function buyCourse(token, coursesId, userDetails, navigate, dispatch) {
+    const toastId = toast.loading("Redirecting to payment...");
+
+    try {
+        const response = await apiConnector(
+            "POST",
+            STRIPE_CHECKOUT_API,
+            { coursesId },
+            { Authorization: `Bearer ${token}` }
+        );
+
+        console.log("STRIPE CHECKOUT RESPONSE:", response);
+
+        if (!response.data.success) {
+            throw new Error(response.data.message);
+        }
+
+        toast.dismiss(toastId);
+
+        // Redirect to Stripe Checkout
+        if (response.data.checkoutUrl) {
+            window.location.href = response.data.checkoutUrl;
+        } else {
+            throw new Error("No checkout URL received");
+        }
+
+    } catch (error) {
+        console.log("BUY COURSE ERROR:", error);
+        toast.dismiss(toastId);
+        toast.error(error.response?.data?.message || "Could not process payment");
     }
-    toast.dismiss(toastId);
-    dispatch(setPaymentLoading(false));
+}
+
+// ================ Send Payment Success Email ================
+export async function sendPaymentSuccessEmail(token, orderId, paymentId, amount) {
+    try {
+        await apiConnector(
+            "POST",
+            SEND_PAYMENT_SUCCESS_EMAIL_API,
+            { orderId, paymentId, amount },
+            { Authorization: `Bearer ${token}` }
+        );
+    } catch (error) {
+        console.log("PAYMENT SUCCESS EMAIL ERROR:", error);
+    }
 }

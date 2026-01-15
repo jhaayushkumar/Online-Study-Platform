@@ -1,3 +1,14 @@
+/**
+ * @file VerifyEmail.jsx
+ * @description OTP verification page for email confirmation during signup
+ * @module pages/VerifyEmail
+ * 
+ * Renders a 6-digit OTP input form for email verification after signup.
+ * Validates OTP against server and completes user registration on success.
+ * Provides resend OTP functionality and redirects to signup if accessed
+ * without valid signup data in Redux store.
+ */
+
 import { useEffect, useState } from "react";
 import OtpInput from "react-otp-input";
 import { Link } from "react-router-dom";

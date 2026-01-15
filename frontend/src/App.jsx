@@ -1,3 +1,13 @@
+/**
+ * @file App.jsx
+ * @description Main application component with routing and layout configuration
+ * @module App
+ * 
+ * Configures React Router routes for all pages including public routes,
+ * protected routes for authenticated users, and role-based routes for
+ * students and instructors. Includes navbar, scroll-to-top functionality,
+ * and token cleanup for malformed localStorage data.
+ */
 
 import { useEffect, useState } from "react";
 import { Route, Routes, useLocation, Link } from "react-router-dom";

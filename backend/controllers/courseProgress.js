@@ -1,3 +1,13 @@
+/**
+ * @file courseProgress.js
+ * @description Course progress tracking controller for the StudyX platform
+ * @module controllers/courseProgress
+ * 
+ * Tracks student learning progress by marking videos as completed.
+ * Maintains a list of completed video IDs for each user-course pair
+ * to calculate progress percentage and resume learning from last position.
+ */
+
 const mongoose = require("mongoose")
 const Section = require("../models/section")
 const SubSection = require("../models/subSection")

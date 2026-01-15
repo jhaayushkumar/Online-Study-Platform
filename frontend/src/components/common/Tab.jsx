@@ -1,3 +1,14 @@
+/**
+ * @file Tab.jsx
+ * @description Reusable tab switcher component for form sections
+ * @module components/common/Tab
+ * 
+ * Renders a pill-style tab group for switching between options.
+ * Used in signup form for Student/Instructor selection and other
+ * multi-option interfaces. Highlights active tab with background
+ * color change and smooth transition effects.
+ */
+
 export default function Tab({ tabData, field, setField }) {
   return (
     <div

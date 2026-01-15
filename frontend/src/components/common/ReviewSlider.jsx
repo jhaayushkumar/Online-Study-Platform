@@ -1,3 +1,14 @@
+/**
+ * @file ReviewSlider.jsx
+ * @description Swiper carousel component for displaying course reviews
+ * @module components/common/ReviewSlider
+ * 
+ * Fetches and displays user reviews in an auto-playing carousel.
+ * Shows reviewer avatar, name, course name, truncated review text,
+ * and star rating. Responsive breakpoints adjust slides per view
+ * for different screen sizes with smooth transitions.
+ */
+
 import React, { useEffect, useState } from "react"
 import ReactStars from "react-rating-stars-component"
 import Img from './Img';

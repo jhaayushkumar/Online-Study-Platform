@@ -1,3 +1,13 @@
+/**
+ * @file category.js
+ * @description Category management controller for the StudyX platform
+ * @module controllers/category
+ * 
+ * Handles course category operations including creating new categories,
+ * fetching all categories, and getting category page details with
+ * associated courses, different category suggestions, and top selling courses.
+ */
+
 const Category = require('../models/category')
 
 // get Random Integer

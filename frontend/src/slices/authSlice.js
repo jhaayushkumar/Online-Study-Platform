@@ -1,3 +1,13 @@
+/**
+ * @file authSlice.js
+ * @description Authentication Redux slice for managing user auth state
+ * @module slices/authSlice
+ * 
+ * Manages authentication state including JWT token storage, signup data
+ * for multi-step registration, and loading states. Handles token persistence
+ * in localStorage with proper parsing for both quoted and unquoted formats.
+ */
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {

@@ -1,3 +1,13 @@
+/**
+ * @file imageUploader.js
+ * @description Cloudinary upload utility for the StudyX platform
+ * @module utils/imageUploader
+ * 
+ * Handles file uploads to Cloudinary cloud storage including images
+ * and videos. Supports custom dimensions, quality settings, and
+ * automatic resource type detection. Also provides delete functionality.
+ */
+
 const cloudinary = require('cloudinary').v2;
 
 exports.uploadImageToCloudinary = async (file, folder, height, quality) => {

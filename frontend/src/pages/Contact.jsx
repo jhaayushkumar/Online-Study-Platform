@@ -1,3 +1,14 @@
+/**
+ * @file Contact.jsx
+ * @description Contact page with form and platform information
+ * @module pages/Contact
+ * 
+ * Renders the contact page with a contact form for user inquiries,
+ * tech stack showcase GIF, contact details section, and review slider.
+ * Allows users to reach out for support, partnerships, or general questions
+ * about the StudyX platform and its services.
+ */
+
 import React from "react"
 
 import Footer from "../components/common/Footer"

@@ -1,3 +1,14 @@
+/**
+ * @file ConfirmationModal.jsx
+ * @description Reusable confirmation dialog modal component
+ * @module components/common/ConfirmationModal
+ * 
+ * Displays a centered modal overlay with customizable title, message,
+ * and action buttons. Used for confirming destructive actions like
+ * logout, account deletion, or course removal. Accepts modalData prop
+ * with text and handler functions for flexible configuration.
+ */
+
 import IconBtn from "./IconBtn"
 
 export default function ConfirmationModal({ modalData }) {

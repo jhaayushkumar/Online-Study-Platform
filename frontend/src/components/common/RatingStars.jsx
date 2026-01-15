@@ -1,3 +1,14 @@
+/**
+ * @file RatingStars.jsx
+ * @description Star rating display component for course reviews
+ * @module components/common/RatingStars
+ * 
+ * Renders a 5-star rating display with full, half, and empty stars.
+ * Calculates star distribution based on review count and displays
+ * appropriate icons. Used in course cards, course details, and
+ * review sections throughout the platform.
+ */
+
 import React, { useEffect, useState } from "react"
 import {
   TiStarFullOutline,

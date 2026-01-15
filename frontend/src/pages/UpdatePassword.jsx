@@ -1,3 +1,13 @@
+/**
+ * @file UpdatePassword.jsx
+ * @description Password update page for resetting user password with token
+ * @module pages/UpdatePassword
+ * 
+ * Handles the final step of password recovery flow where users enter new password.
+ * Validates password confirmation match and submits reset request with token
+ * from URL. Shows/hides password fields and redirects to login on success.
+ */
+
 import { useState } from "react"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
 import { BiArrowBack } from "react-icons/bi"

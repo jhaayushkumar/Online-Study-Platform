@@ -1,3 +1,14 @@
+/**
+ * @file PageNotFound.jsx
+ * @description 404 error page displayed when route is not found
+ * @module pages/PageNotFound
+ * 
+ * Renders a user-friendly 404 error page with animated GIF background.
+ * Displays "Look like you're lost" message and provides a button to
+ * navigate back to the homepage. Helps users recover from invalid URLs
+ * with clear visual feedback and easy navigation option.
+ */
+
 import React from 'react'
 import { Link } from 'react-router-dom'
 

@@ -1,3 +1,13 @@
+/**
+ * @file user.js
+ * @description User model schema for the StudyX platform
+ * @module models/user
+ * 
+ * Defines the user document structure including personal info (name, email),
+ * authentication data (password, googleId), account type (Student/Instructor/Admin),
+ * enrolled courses, course progress tracking, and profile image URL.
+ */
+
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema(
@@ -9,8 +19,9 @@ const userSchema = new mongoose.Schema(
         },
         lastName: {
             type: String,
-            required: true,
-            trim: true
+            required: false,
+            trim: true,
+            default: ''
         },
         email: {
             type: String,
@@ -19,7 +30,11 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: true
+            required: false  // Optional for Google OAuth users
+        },
+        googleId: {
+            type: String,
+            default: null
         },
         accountType: {
             type: String,

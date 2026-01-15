@@ -1,3 +1,14 @@
+/**
+ * @file PaymentCancel.jsx
+ * @description Payment cancellation page for abandoned Stripe checkout
+ * @module pages/PaymentCancel
+ * 
+ * Displays user-friendly message when payment is cancelled or abandoned.
+ * Reassures user that no charges were made and provides options to
+ * retry payment or return to home page. Helps recover from payment
+ * flow interruptions gracefully.
+ */
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdCancel } from 'react-icons/md';

@@ -1,3 +1,13 @@
+/**
+ * @file viewCourseSlice.js
+ * @description View Course Redux slice for managing course viewing state
+ * @module slices/viewCourseSlice
+ * 
+ * Manages state for course viewing including section data, entire course data,
+ * completed lectures tracking, and total lecture count. Provides actions for
+ * updating progress as students complete lectures during course consumption.
+ */
+
 import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {

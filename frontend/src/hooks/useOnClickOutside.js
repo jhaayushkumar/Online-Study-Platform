@@ -1,3 +1,14 @@
+/**
+ * @file useOnClickOutside.js
+ * @description Custom hook for detecting clicks outside a component
+ * @module hooks/useOnClickOutside
+ * 
+ * Listens for mousedown and touchstart events on the document and
+ * calls the handler function when click occurs outside the referenced
+ * element. Used for closing dropdowns, modals, and menus when user
+ * clicks elsewhere on the page.
+ */
+
 import { useEffect } from "react";
 
 // This hook detects clicks outside of the specified component and calls the provided handler function.

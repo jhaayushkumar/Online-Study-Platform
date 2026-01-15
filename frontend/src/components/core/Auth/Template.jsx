@@ -1,3 +1,13 @@
+/**
+ * @file Template.jsx
+ * @description Reusable auth page template for login and signup forms
+ * @module components/core/Auth/Template
+ * 
+ * Provides consistent layout for authentication pages with title, description,
+ * form component, and side image. Renders either LoginForm or SignupForm based
+ * on formType prop. Responsive design with mobile-first approach and proper
+ * spacing for both small and large screen sizes.
+ */
 
 import LoginForm from "./LoginForm"
 import SignupForm from "./SignupForm"

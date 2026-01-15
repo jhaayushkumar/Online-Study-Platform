@@ -1,4 +1,12 @@
-// AUTH , IS STUDENT , IS INSTRUCTOR , IS ADMIN
+/**
+ * @file auth.js
+ * @description Authentication middleware for the StudyX platform
+ * @module middleware/auth
+ * 
+ * Provides JWT token verification and role-based access control.
+ * Includes auth middleware for token validation, and role checkers
+ * (isStudent, isInstructor, isAdmin) for protecting routes by user type.
+ */
 
 const jwt = require("jsonwebtoken");
 require('dotenv').config();

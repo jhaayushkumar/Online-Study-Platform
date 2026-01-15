@@ -1,3 +1,14 @@
+/**
+ * @file sidebarSlice.js
+ * @description Sidebar Redux slice for managing sidebar visibility state
+ * @module slices/sidebarSlice
+ * 
+ * Controls sidebar menu visibility across the application including main
+ * navigation sidebar and course view sidebar. Tracks screen size for
+ * responsive behavior and provides actions to toggle sidebar states
+ * for both mobile and desktop layouts.
+ */
+
 import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {

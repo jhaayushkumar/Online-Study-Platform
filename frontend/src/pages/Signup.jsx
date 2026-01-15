@@ -1,3 +1,13 @@
+/**
+ * @file Signup.jsx
+ * @description Signup page component for new user registration
+ * @module pages/Signup
+ * 
+ * Renders the signup page using the Template component with registration form.
+ * Allows users to create Student or Instructor accounts with email verification.
+ * Supports both email/password registration and Google OAuth signup methods.
+ */
+
 import signupImg from "../assets/Images/signup.png"
 import Template from "../components/core/Auth/Template"
 

@@ -1,3 +1,13 @@
+/**
+ * @file motionFrameVarients.js
+ * @description Framer Motion animation variants for page transitions
+ * @module components/common/motionFrameVarients
+ * 
+ * Defines reusable animation configurations for Framer Motion including
+ * fadeIn with directional support, bounce effect, and scaleUp animation.
+ * Used throughout the application for smooth entrance animations on
+ * homepage sections, about page, and other animated components.
+ */
 
 export const fadeIn = (direction, delay) => {
     return {

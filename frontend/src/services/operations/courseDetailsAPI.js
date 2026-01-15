@@ -1,3 +1,15 @@
+/**
+ * @file courseDetailsAPI.js
+ * @description Course API operations for course management and details
+ * @module services/operations/courseDetailsAPI
+ * 
+ * Comprehensive API module for all course-related operations including
+ * fetching course details, categories, creating/editing courses, managing
+ * sections and subsections, handling lecture completion tracking, and
+ * course ratings. Used by instructors for course management and students
+ * for course consumption and progress tracking.
+ */
+
 import { toast } from "react-hot-toast"
 
 import { updateCompletedLectures } from "../../slices/viewCourseSlice"

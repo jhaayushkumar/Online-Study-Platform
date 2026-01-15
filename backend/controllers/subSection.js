@@ -1,3 +1,13 @@
+/**
+ * @file subSection.js
+ * @description Lecture (SubSection) management controller for the StudyX platform
+ * @module controllers/subSection
+ * 
+ * Manages course lectures within sections including creating new lectures
+ * with video upload to Cloudinary, updating lecture details and videos,
+ * and deleting lectures. Automatically calculates video duration.
+ */
+
 const Section = require('../models/section');
 const SubSection = require('../models/subSection');
 const { uploadImageToCloudinary } = require('../utils/imageUploader');

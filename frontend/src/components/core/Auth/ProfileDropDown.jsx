@@ -1,3 +1,14 @@
+/**
+ * @file ProfileDropDown.jsx
+ * @description User profile dropdown menu component for navigation header
+ * @module components/core/Auth/ProfileDropDown
+ * 
+ * Renders a clickable profile avatar with dropdown menu for logged-in users.
+ * Shows dashboard link and logout option. Uses click-outside hook to close
+ * dropdown when clicking elsewhere. Only visible on larger screens with
+ * mobile version handled by MobileProfileDropDown component.
+ */
+
 import { useRef, useState } from "react"
 import { AiOutlineCaretDown } from "react-icons/ai"
 import { VscDashboard, VscSignOut } from "react-icons/vsc"

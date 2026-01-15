@@ -1,3 +1,13 @@
+/**
+ * @file LoginForm.jsx
+ * @description Login form component for user authentication
+ * @module components/core/Auth/LoginForm
+ * 
+ * Renders the login form with email and password fields, password visibility
+ * toggle, forgot password link, and Google OAuth button. Handles form submission
+ * by dispatching login action and redirects to home page on successful auth.
+ */
+
 import { useState } from "react"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
 import { useDispatch } from "react-redux"
@@ -101,12 +111,7 @@ function LoginForm() {
       </div>
 
       {/* Google Login Button */}
-      {/* Assuming GoogleLoginButton is a component that needs to be defined or imported */}
-      {/* For demonstration, using a placeholder div */}
-      <div className="flex items-center justify-center gap-x-2 rounded-md border border-richblack-700 bg-richblack-800 px-3 py-2 text-richblack-100 font-medium cursor-pointer">
-        {/* You would typically place a Google icon here */}
-        <span>Sign in with Google</span>
-      </div>
+      <GoogleLoginButton />
     </form>
   )
 }

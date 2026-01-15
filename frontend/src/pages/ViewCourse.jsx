@@ -1,3 +1,14 @@
+/**
+ * @file ViewCourse.jsx
+ * @description Course viewing page for enrolled students to watch lectures
+ * @module pages/ViewCourse
+ * 
+ * Renders the course player layout with video sidebar and content area.
+ * Fetches full course details, tracks completed lectures, and manages
+ * responsive sidebar visibility. Includes course review modal for students
+ * to rate and review courses after completion.
+ */
+
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Outlet, useParams } from "react-router-dom"

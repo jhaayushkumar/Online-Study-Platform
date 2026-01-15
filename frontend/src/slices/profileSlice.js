@@ -1,3 +1,14 @@
+/**
+ * @file profileSlice.js
+ * @description Profile Redux slice for managing user profile state
+ * @module slices/profileSlice
+ * 
+ * Manages user profile data and loading states. Persists user data in
+ * localStorage to maintain session across page refreshes. Handles user
+ * information display in navbar, dashboard, and profile sections throughout
+ * the application for both students and instructors.
+ */
+
 import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
