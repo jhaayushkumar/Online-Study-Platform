@@ -83,7 +83,7 @@ const Home = () => {
 
     // get courses data
     const [CatalogPageData, setCatalogPageData] = useState(null);
-    const categoryID = "696923908bbe6bb533f64704" // Web Development category
+    const categoryID = "696956c6b23e3fb459fe71bb" // Web Development category (Live DB)
     const dispatch = useDispatch();
 
     useEffect(() => {
