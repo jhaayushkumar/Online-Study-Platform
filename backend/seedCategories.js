@@ -5,7 +5,7 @@
  * Run with: node seedCategories.js
  */
 
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/.env' });
 const mongoose = require('mongoose');
 const Category = require('./models/category');
 

@@ -5,7 +5,7 @@
  * Run with: node seedCourses.js
  */
 
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/.env' });
 const mongoose = require('mongoose');
 const Course = require('./models/course');
 const Category = require('./models/category');
