@@ -1,22 +1,55 @@
-import { useState } from "react"
+/**
+ * @file SignupForm.jsx
+ * @description Signup form component for new user registration
+ * @module components/core/Auth/SignupForm
+ * 
+ * Renders multi-field registration form with account type selection tabs,
+ * name fields, email, password with confirmation, and Google OAuth option.
+ * Validates password match, stores signup data in Redux, and triggers OTP
+ * verification flow for email confirmation before account creation.
+ */
+
+import { useState, useEffect } from "react"
 import { toast } from "react-hot-toast"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
 import { useDispatch } from "react-redux"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 
 import { sendOtp } from "../../../services/operations/authAPI"
 import { setSignupData } from "../../../slices/authSlice"
 import { ACCOUNT_TYPE } from "../../../utils/constants"
 import Tab from "../../common/Tab"
+import GoogleLoginButton from "./GoogleLoginButton"
 
 
 
 function SignupForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
 
+  // Get accountType from URL query parameter, default to STUDENT
+  const accountTypeFromUrl = searchParams.get('accountType');
+  
+  console.log('SignupForm - Full URL:', window.location.href);
+  console.log('SignupForm - Search params:', searchParams.toString());
+  console.log('SignupForm - accountTypeFromUrl:', accountTypeFromUrl);
+  
   // student or instructor
-  const [accountType, setAccountType] = useState(ACCOUNT_TYPE.STUDENT);
+  const [accountType, setAccountType] = useState(
+    accountTypeFromUrl === 'Instructor' ? ACCOUNT_TYPE.INSTRUCTOR : ACCOUNT_TYPE.STUDENT
+  );
+
+  // Set account type from URL parameter when component mounts or URL changes
+  useEffect(() => {
+    console.log('SignupForm useEffect - accountTypeFromUrl:', accountTypeFromUrl);
+    console.log('SignupForm useEffect - ACCOUNT_TYPE.INSTRUCTOR:', ACCOUNT_TYPE.INSTRUCTOR);
+    
+    if (accountTypeFromUrl === 'Instructor') {
+      console.log('Setting accountType to INSTRUCTOR');
+      setAccountType(ACCOUNT_TYPE.INSTRUCTOR);
+    }
+  }, [accountTypeFromUrl]);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -219,6 +252,16 @@ function SignupForm() {
         >
           Create Account
         </button>
+
+        {/* Divider */}
+        <div className="flex items-center my-4">
+          <div className="flex-1 border-t border-richblack-700"></div>
+          <span className="px-4 text-sm text-richblack-400">OR</span>
+          <div className="flex-1 border-t border-richblack-700"></div>
+        </div>
+
+        {/* Google Signup Button */}
+        <GoogleLoginButton accountType={accountType} />
       </form>
     </div>
   )

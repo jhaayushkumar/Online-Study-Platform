@@ -1,3 +1,14 @@
+/**
+ * @file courseSlice.js
+ * @description Course Redux slice for managing course creation workflow
+ * @module slices/courseSlice
+ * 
+ * Manages course creation and editing state including multi-step form progress,
+ * current course data, edit mode flag, and payment loading state. Provides
+ * actions for navigating between course creation steps and resetting state
+ * after course publication or cancellation.
+ */
+
 import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {

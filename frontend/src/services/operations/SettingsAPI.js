@@ -1,3 +1,14 @@
+/**
+ * @file SettingsAPI.js
+ * @description Settings API operations for user account management
+ * @module services/operations/SettingsAPI
+ * 
+ * Handles user settings operations including profile picture updates,
+ * profile information editing, password changes, and account deletion.
+ * Manages localStorage synchronization for profile data and provides
+ * toast notifications for operation feedback to users.
+ */
+
 import { toast } from "react-hot-toast"
 
 import { setUser } from "../../slices/profileSlice"

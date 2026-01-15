@@ -1,6 +1,16 @@
+/**
+ * @file Home.jsx
+ * @description Main landing page component for the StudyX e-learning platform
+ * @module pages/Home
+ * 
+ * Renders the homepage with hero section, animated code blocks, course sliders,
+ * explore more section, timeline, learning language section, instructor section,
+ * and review slider. Features random background images and motion animations.
+ */
+
 import React, { useEffect, useState } from 'react'
 import { Link } from "react-router-dom"
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import HighlightText from '../components/core/HomePage/HighlightText'
 import CTAButton from "../components/core/HomePage/Button"
@@ -58,6 +68,9 @@ const randomImges = [
 
 const Home = () => {
 
+    const { token } = useSelector((state) => state.auth);
+    const { user } = useSelector((state) => state.profile);
+
     // get background random images
     const [backgroundImg, setBackgroundImg] = useState(null);
 
@@ -70,7 +83,7 @@ const Home = () => {
 
     // get courses data
     const [CatalogPageData, setCatalogPageData] = useState(null);
-    const categoryID = "6920363015bc915e72fc9c2b" // Web Development category
+    const categoryID = "696923908bbe6bb533f64704" // Web Development category
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -106,17 +119,19 @@ const Home = () => {
                 {/*Section1  */}
                 <div className='relative h-[450px] md:h-[550px] justify-center mx-auto flex flex-col w-11/12 max-w-maxContent items-center text-white '>
 
-                    <Link to={"/signup?accountType=Instructor"}>
-                        <div className='z-10 group p-1 mx-auto rounded-full bg-richblack-800 font-bold text-richblack-200
-                                        transition-all duration-200 hover:scale-95 w-fit'>
-                            <div className='flex flex-row items-center gap-2 rounded-full px-10 py-[5px]
-                              transition-all duration-200 group-hover:bg-richblack-900'>
-                                <p>Become an Instructor</p>
-                                <FaArrowRight />
+                    {/* Show button only if user is not logged in, or is logged in but not an instructor */}
+                    {(!token || (user && user.accountType !== 'Instructor')) && (
+                        <Link to={token ? "/login?accountType=Instructor" : "/signup?accountType=Instructor"}>
+                            <div className='z-10 group p-1 mx-auto rounded-full bg-richblack-800 font-bold text-richblack-200
+                                            transition-all duration-200 hover:scale-95 w-fit'>
+                                <div className='flex flex-row items-center gap-2 rounded-full px-10 py-[5px]
+                                  transition-all duration-200 group-hover:bg-richblack-900'>
+                                    <p>Become an Instructor</p>
+                                    <FaArrowRight />
+                                </div>
                             </div>
-                        </div>
-
-                    </Link>
+                        </Link>
+                    )}
 
                     <motion.div
                         variants={fadeIn('left', 0.1)}

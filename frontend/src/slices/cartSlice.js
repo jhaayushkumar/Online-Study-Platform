@@ -1,3 +1,14 @@
+/**
+ * @file cartSlice.js
+ * @description Shopping Cart Redux slice for managing course cart state
+ * @module slices/cartSlice
+ * 
+ * Manages shopping cart functionality with localStorage persistence.
+ * Handles adding/removing courses, calculating totals, and preventing
+ * duplicate entries. Provides toast notifications for cart operations
+ * and maintains cart state across browser sessions.
+ */
+
 import { createSlice } from "@reduxjs/toolkit"
 import { toast } from "react-hot-toast"
 

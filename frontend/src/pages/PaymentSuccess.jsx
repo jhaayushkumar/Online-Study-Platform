@@ -1,3 +1,14 @@
+/**
+ * @file PaymentSuccess.jsx
+ * @description Payment success page for Stripe checkout completion
+ * @module pages/PaymentSuccess
+ * 
+ * Displays payment confirmation after successful Stripe checkout.
+ * Verifies payment session with backend, enrolls student in purchased
+ * courses, and shows success message with navigation options to
+ * enrolled courses or home page.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';

@@ -1,3 +1,14 @@
+/**
+ * @file Catalog.jsx
+ * @description Course catalog page displaying courses by category
+ * @module pages/Catalog
+ * 
+ * Renders category-specific course listings with filtering options.
+ * Shows popular courses, new courses, and frequently bought courses.
+ * Fetches category data dynamically based on URL parameter and displays
+ * course sliders and grid layouts for easy course discovery.
+ */
+
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 

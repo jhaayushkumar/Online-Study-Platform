@@ -1,3 +1,14 @@
+/**
+ * @file IconBtn.jsx
+ * @description Reusable icon button component with customizable styles
+ * @module components/common/IconBtn
+ * 
+ * Renders a styled button with optional icon children and text.
+ * Supports outline variant, disabled state, and custom classes.
+ * Used throughout the application for action buttons with consistent
+ * styling and hover effects.
+ */
+
 export default function IconBtn({ text, onclick, children, disabled, outline = false, customClasses, type, }) {
     return (
         <button

@@ -1,3 +1,14 @@
+/**
+ * @file Navbar.jsx
+ * @description Main navigation bar component for the StudyX platform
+ * @module components/common/Navbar
+ * 
+ * Renders the top navigation with logo, nav links, catalog dropdown with
+ * course categories, shopping cart icon, and auth buttons or profile dropdown.
+ * Features scroll-based show/hide behavior and responsive design for mobile
+ * and desktop layouts with separate profile dropdown components.
+ */
+
 import React, { useState, useEffect } from 'react'
 import { Link, matchPath, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'

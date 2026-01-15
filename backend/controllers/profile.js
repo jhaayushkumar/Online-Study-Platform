@@ -1,3 +1,13 @@
+/**
+ * @file profile.js
+ * @description User profile management controller for the StudyX platform
+ * @module controllers/profile
+ * 
+ * Manages user profile operations including updating profile details,
+ * uploading profile pictures to Cloudinary, deleting user accounts,
+ * fetching enrolled courses with progress, and instructor dashboard data.
+ */
+
 const Profile = require('../models/profile');
 const User = require('../models/user');
 const CourseProgress = require('../models/courseProgress')
@@ -6,88 +16,15 @@ const Course = require('../models/course')
 const { uploadImageToCloudinary, deleteResourceFromCloudinary } = require('../utils/imageUploader');
 const { convertSecondsToDuration } = require('../utils/secToDuration')
 
-
-
-exports.updateUserProfileImage = async (req, res) => {
-    try {
-        // extract data
-        const displayPicture = req.files?.displayPicture;
-        const userId = req.user.id;
-
-        console.log('📸 Upload request received for user:', userId);
-        console.log('📁 Files:', req.files);
-
-        // validation
-        if (!displayPicture) {
-            return res.status(400).json({
-                success: false,
-                message: 'Profile picture is required'
-            });
-        }
-
-        console.log('⬆️ Uploading to Cloudinary...');
-        
-        // upload image to cloudinary
-        const image = await uploadImageToCloudinary(
-            displayPicture,
-            process.env.FOLDER_NAME,
-            1000,
-            1000
-        );
-        
-        if (!image || !image.secure_url) {
-            throw new Error('Cloudinary upload failed - no URL returned');
-        }
-        
-        const imageUrl = image.secure_url;
-        console.log('✅ Cloudinary upload successful:', imageUrl);
-
-        // update user profile image
-        const updatedProfile = await User.findByIdAndUpdate(
-            { _id: userId },
-            { image: imageUrl },
-            { new: true }
-        ).populate('additionalDetails').exec();
-
-        console.log('✅ Profile updated in database');
-
-        // return response
-        res.status(200).json({
-            success: true,
-            data: updatedProfile,
-            message: 'Profile picture updated successfully'
-        });
-    }
-    catch (error) {
-        console.log('❌ Error while updating profile picture');
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            error: error.message,
-            message: 'Error while updating profile picture'
-        })
-    }
-}
-
-
-// ================ update Profile ================
 exports.updateProfile = async (req, res) => {
     try {
-        // extract data
         const { gender = '', dateOfBirth = "", about = "", contactNumber = '', firstName, lastName } = req.body;
-
-        // extract userId
         const userId = req.user.id;
 
-
-        // find profile
         const userDetails = await User.findById(userId);
         const profileId = userDetails.additionalDetails;
         const profileDetails = await Profile.findById(profileId);
 
-        // console.log('User profileDetails -> ', profileDetails);
-
-        // Update the profile fields
         userDetails.firstName = firstName;
         userDetails.lastName = lastName;
         await userDetails.save()
@@ -97,16 +34,13 @@ exports.updateProfile = async (req, res) => {
         profileDetails.about = about;
         profileDetails.contactNumber = contactNumber;
 
-        // save data to DB
         await profileDetails.save();
 
         const updatedUserDetails = await User.findById(userId)
             .populate({
                 path: 'additionalDetails'
             })
-        // console.log('updatedUserDetails -> ', updatedUserDetails);
 
-        // return response
         res.status(200).json({
             success: true,
             updatedUserDetails,
@@ -125,14 +59,10 @@ exports.updateProfile = async (req, res) => {
 }
 
 
-// ================ delete Account ================
 exports.deleteAccount = async (req, res) => {
     try {
-        // extract user id
         const userId = req.user.id;
-        // console.log('userId = ', userId)
 
-        // validation
         const userDetails = await User.findById(userId);
         if (!userDetails) {
             return res.status(404).json({
@@ -141,14 +71,9 @@ exports.deleteAccount = async (req, res) => {
             });
         }
 
-        // delete user profile picture From Cloudinary
         await deleteResourceFromCloudinary(userDetails.image);
 
-        // if any student delete their account && enrollded in any course then ,
-        // student entrolled in particular course sholud be decreae by one
-        // user - courses - studentsEnrolled
         const userEnrolledCoursesId = userDetails.courses
-        console.log('userEnrolledCourses ids = ', userEnrolledCoursesId)
 
         for (const courseId of userEnrolledCoursesId) {
             await Course.findByIdAndUpdate(courseId, {
@@ -156,16 +81,9 @@ exports.deleteAccount = async (req, res) => {
             })
         }
 
-        // first - delete profie (profileDetails)
         await Profile.findByIdAndDelete(userDetails.additionalDetails);
-
-        // second - delete account
         await User.findByIdAndDelete(userId);
 
-
-        // sheduale this deleting account , crone job
-
-        // return response
         res.status(200).json({
             success: true,
             message: 'Account deleted successfully'
@@ -182,18 +100,12 @@ exports.deleteAccount = async (req, res) => {
     }
 }
 
-
-// ================ get details of user ================
 exports.getUserDetails = async (req, res) => {
     try {
-        // extract userId
         const userId = req.user.id;
-        console.log('id - ', userId);
 
-        // get user details
         const userDetails = await User.findById(userId).populate('additionalDetails').exec();
 
-        // return response
         res.status(200).json({
             success: true,
             data: userDetails,
@@ -211,15 +123,11 @@ exports.getUserDetails = async (req, res) => {
     }
 }
 
-
-
-// ================ Update User profile Image ================
 exports.updateUserProfileImage = async (req, res) => {
     try {
-        const profileImage = req.files?.profileImage;
+        const profileImage = req.files?.profileImage || req.files?.displayPicture;
         const userId = req.user.id;
 
-        // validation
         if (!profileImage) {
             return res.status(400).json({
                 success: false,
@@ -227,7 +135,6 @@ exports.updateUserProfileImage = async (req, res) => {
             });
         }
 
-        // upload image to cloudinary
         const image = await uploadImageToCloudinary(
             profileImage,
             process.env.FOLDER_NAME, 
@@ -242,14 +149,12 @@ exports.updateUserProfileImage = async (req, res) => {
             });
         }
 
-        // update in DB 
         const updatedUserDetails = await User.findByIdAndUpdate(
             userId,
             { image: image.secure_url },
             { new: true }
         ).populate('additionalDetails');
 
-        // success response
         res.status(200).json({
             success: true,
             message: `Image Updated successfully`,
@@ -268,9 +173,6 @@ exports.updateUserProfileImage = async (req, res) => {
 }
 
 
-
-
-// ================ Get Enrolled Courses ================
 exports.getEnrolledCourses = async (req, res) => {
     try {
         const userId = req.user.id
@@ -311,7 +213,6 @@ exports.getEnrolledCourses = async (req, res) => {
             if (SubsectionLength === 0) {
                 userDetails.courses[i].progressPercentage = 100
             } else {
-                // To make it up to 2 decimal point
                 const multiplier = Math.pow(10, 2)
                 userDetails.courses[i].progressPercentage =
                     Math.round((courseProgressCount / SubsectionLength) * 100 * multiplier) / multiplier
@@ -337,10 +238,6 @@ exports.getEnrolledCourses = async (req, res) => {
     }
 }
 
-
-
-
-// ================ instructor Dashboard ================
 exports.instructorDashboard = async (req, res) => {
     try {
         const courseDetails = await Course.find({ instructor: req.user.id })
@@ -349,12 +246,10 @@ exports.instructorDashboard = async (req, res) => {
             const totalStudentsEnrolled = course.studentsEnrolled.length
             const totalAmountGenerated = totalStudentsEnrolled * course.price
 
-            // Create a new object with the additional fields
             const courseDataWithStats = {
                 _id: course._id,
                 courseName: course.courseName,
                 courseDescription: course.courseDescription,
-                // Include other course properties as needed
                 totalStudentsEnrolled,
                 totalAmountGenerated,
             }

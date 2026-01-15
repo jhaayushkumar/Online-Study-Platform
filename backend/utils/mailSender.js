@@ -1,3 +1,13 @@
+/**
+ * @file mailSender.js
+ * @description Email utility for the StudyX platform
+ * @module utils/mailSender
+ * 
+ * Sends emails using Nodemailer with Gmail SMTP configuration.
+ * Used for OTP verification, password reset links, course enrollment
+ * confirmations, and contact form notifications.
+ */
+
 const nodemailer = require('nodemailer');
 
 const mailSender = async (email, title, body) => {
@@ -5,7 +15,7 @@ const mailSender = async (email, title, body) => {
         const transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
             port: 587,
-            secure: false, // true for 465, false for other ports
+            secure: false,
             auth: {
                 user: process.env.MAIL_USER,
                 pass: process.env.MAIL_PASS
@@ -22,13 +32,10 @@ const mailSender = async (email, title, body) => {
             html: body
         });
 
-        console.log('✅ Email sent successfully to:', email);
-        console.log('Message ID:', info.messageId);
         return info;
     }
     catch (error) {
-        console.log('❌ Error while sending mail to:', email);
-        console.log('Error details:', error.message);
+        console.log('Error while sending mail:', error.message);
         throw error;
     }
 }

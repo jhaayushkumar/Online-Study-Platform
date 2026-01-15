@@ -1,3 +1,13 @@
+/**
+ * @file apis.js
+ * @description API endpoints configuration for the StudyX frontend
+ * @module services/apis
+ * 
+ * Centralizes all backend API endpoint URLs organized by feature:
+ * authentication, profile, courses, payments, ratings, categories,
+ * and settings. Uses environment variable for base URL configuration.
+ */
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 // AUTH ENDPOINTS

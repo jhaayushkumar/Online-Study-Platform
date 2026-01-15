@@ -1,3 +1,14 @@
+/**
+ * @file Footer.jsx
+ * @description Site-wide footer component with links and social icons
+ * @module components/common/Footer
+ * 
+ * Renders comprehensive footer with company info, resource links, plans,
+ * community links, and subject categories. Includes social media icons,
+ * copyright notice, and creator attribution. Organized in responsive
+ * multi-column layout with hover effects on all interactive elements.
+ */
+
 import React from "react";
 import { FooterLink2 } from "../../../data/footer-links";
 import { Link } from "react-router-dom";

@@ -1,3 +1,14 @@
+/**
+ * @file MobileProfileDropDown.jsx
+ * @description Mobile navigation dropdown menu for logged-in users
+ * @module components/core/Auth/MobileProfileDropDown
+ * 
+ * Renders a compact profile dropdown for mobile devices with navigation
+ * links to dashboard, home, catalog, about, contact, and logout option.
+ * Only visible on small screens, complementing the desktop ProfileDropDown.
+ * Uses click-outside hook to close when tapping elsewhere.
+ */
+
 import { useRef, useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"

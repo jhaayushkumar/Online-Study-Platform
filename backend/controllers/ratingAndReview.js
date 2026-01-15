@@ -1,3 +1,13 @@
+/**
+ * @file ratingAndReview.js
+ * @description Course rating and review controller for the StudyX platform
+ * @module controllers/ratingAndReview
+ * 
+ * Handles course ratings and reviews including creating new reviews
+ * (only for enrolled students), calculating average ratings using
+ * MongoDB aggregation, and fetching all reviews with user and course details.
+ */
+
 const User = require('../models/user')
 const Course = require('../models/course')
 const RatingAndReview = require('../models/ratingAndReview')

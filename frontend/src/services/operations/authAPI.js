@@ -1,3 +1,13 @@
+/**
+ * @file authAPI.js
+ * @description Authentication API operations for the StudyX frontend
+ * @module services/operations/authAPI
+ * 
+ * Handles all authentication-related API calls including sending OTP,
+ * user signup with OTP verification, login with JWT token storage,
+ * password reset flow, and logout with state cleanup.
+ */
+
 import { toast } from "react-hot-toast"
 
 import { setLoading, setToken } from "../../slices/authSlice"
@@ -68,13 +78,12 @@ export function signUp(accountType, firstName, lastName, email, password, confir
         throw new Error(response.data.message);
       }
 
-      toast.success("Signup Successful");
+      toast.success("Signup Successful! Please login.");
+      // Redirect to login page after successful signup
       navigate("/login");
     } catch (error) {
       console.log("SIGNUP API ERROR --> ", error);
-      // toast.error(error.response.data.message);
       toast.error("Invalid OTP");
-      // navigate("/signup")
     }
     dispatch(setLoading(false))
     toast.dismiss(toastId)
@@ -109,12 +118,18 @@ export function login(email, password, navigate) {
         : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.firstName} ${response.data.user.lastName}`
 
       dispatch(setUser({ ...response.data.user, image: userImage }));
-      // console.log('User data - ', response.data.user);/
       localStorage.setItem("token", response.data?.token);
-
       localStorage.setItem("user", JSON.stringify({ ...response.data.user, image: userImage }));
 
-      navigate("/dashboard/my-profile");
+      // Redirect based on account type
+      console.log("User Account Type:", response.data.user.accountType);
+      if (response.data.user.accountType === "Instructor") {
+        console.log("Redirecting to instructor dashboard");
+        navigate("/dashboard/instructor");
+      } else {
+        console.log("Redirecting to home page");
+        navigate("/");
+      }
     } catch (error) {
       console.log("LOGIN API ERROR.......", error)
       toast.error(error.response?.data?.message)

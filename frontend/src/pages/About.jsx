@@ -1,3 +1,14 @@
+/**
+ * @file About.jsx
+ * @description About page showcasing StudyX platform story and mission
+ * @module pages/About
+ * 
+ * Displays the company's founding story, vision, and mission with animated
+ * sections. Includes statistics component, learning grid, contact form,
+ * and review slider. Features motion animations for engaging user experience
+ * and highlights the platform's commitment to online education innovation.
+ */
+
 import React from "react"
 
 import FoundingStory from "../assets/Images/FoundingStory.png"

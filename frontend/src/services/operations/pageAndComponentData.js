@@ -1,5 +1,14 @@
+/**
+ * @file pageAndComponentData.js
+ * @description Catalog page data API operations for category-based course listings
+ * @module services/operations/pageAndComponentData
+ * 
+ * Fetches catalog page data for displaying courses by category.
+ * Retrieves selected category courses, different category suggestions,
+ * and most selling courses for the catalog page layout.
+ */
+
 import React from 'react'
-// import { toast } from "react-hot-toast"
 import { apiConnector } from '../apiConnector';
 import { catalogData } from '../apis';
 

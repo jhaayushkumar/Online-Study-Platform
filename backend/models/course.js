@@ -1,3 +1,13 @@
+/**
+ * @file course.js
+ * @description Course model schema for the StudyX platform
+ * @module models/course
+ * 
+ * Defines the course document structure including course details (name, description),
+ * instructor reference, pricing, thumbnail, category, tags, course content sections,
+ * enrolled students list, ratings/reviews, and publication status (Draft/Published).
+ */
+
 const mongoose = require('mongoose')
 
 const courseSchema = new mongoose.Schema({

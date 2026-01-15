@@ -1,3 +1,14 @@
+/**
+ * @file ForgotPassword.jsx
+ * @description Password reset request page for forgotten passwords
+ * @module pages/ForgotPassword
+ * 
+ * Handles the first step of password recovery flow by collecting user email.
+ * Sends password reset token to the provided email address and shows
+ * confirmation message. Includes loading state and option to resend email
+ * if the user doesn't receive the reset link.
+ */
+
 import React, { useState } from "react"
 import { BiArrowBack } from "react-icons/bi"
 import { useDispatch, useSelector } from "react-redux"

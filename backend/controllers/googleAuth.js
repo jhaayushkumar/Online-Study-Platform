@@ -1,4 +1,13 @@
-// Google OAuth Login
+/**
+ * @file googleAuth.js
+ * @description Legacy Google OAuth controller for the StudyX platform
+ * @module controllers/googleAuth
+ * 
+ * Handles Google Sign-In authentication using Google OAuth 2.0.
+ * Verifies Google ID tokens, creates new users or links existing accounts,
+ * and generates JWT tokens for authenticated sessions.
+ */
+
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/user');
 const Profile = require('../models/profile');

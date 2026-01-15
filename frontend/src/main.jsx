@@ -1,3 +1,14 @@
+/**
+ * @file main.jsx
+ * @description Application entry point and root configuration
+ * @module main
+ * 
+ * Initializes the React application with Redux store provider, React Router,
+ * Google OAuth provider for authentication, and toast notifications.
+ * Configures the root element and renders the main App component with
+ * all necessary context providers wrapped around it.
+ */
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'

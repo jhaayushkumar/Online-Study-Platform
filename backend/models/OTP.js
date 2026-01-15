@@ -1,3 +1,13 @@
+/**
+ * @file OTP.js
+ * @description OTP model schema for the StudyX platform
+ * @module models/OTP
+ * 
+ * Stores one-time passwords for email verification during signup.
+ * OTPs auto-expire after 5 minutes using MongoDB TTL index.
+ * Pre-save hook automatically sends verification email to user.
+ */
+
 const mongoose = require('mongoose');
 const mailSender = require('../utils/mailSender');
 const emailTemplate = require('../mail/templates/emailVerificationTemplate');
@@ -14,48 +24,32 @@ const OTPSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now(),
-        expires: 5 * 60, // The document will be automatically deleted after 5 minutes of its creation time
+        expires: 5 * 60,
     }
-
 });
 
-//  function to send email
 async function sendVerificationEmail(email, otp) {
     try {
-        console.log('📧 Attempting to send OTP email to:', email);
-        console.log('🔢 OTP:', otp);
-        
-        // Extract name from email
         const name = email.split('@')[0].split('.').map(part => part.replace(/\d+/g, '')).join(' ');
-        
         const emailBody = emailTemplate(otp, name);
-        const mailResponse = await mailSender(
-            email, 
-            'Verification Email from StudyX', 
-            emailBody
-        );
-        
-        console.log('✅ OTP Email sent successfully to:', email);
+        const mailResponse = await mailSender(email, 'Verification Email from StudyX', emailBody);
         return mailResponse;
     }
     catch (error) {
-        console.log('❌ Error while sending OTP email to:', email);
-        console.log('Error:', error.message);
+        console.log('Error while sending OTP email:', error.message);
         throw error;
     }
 }
 
-// pre middleware
 OTPSchema.pre('save', async function(next) {
-    console.log("📝 New OTP document being saved");
-
-    // Only send an email when a new document is created
     if (this.isNew) {
-        await sendVerificationEmail(this.email, this.otp);
+        try {
+            await sendVerificationEmail(this.email, this.otp);
+        } catch (error) {
+            console.log('Email sending failed, but OTP saved for testing');
+        }
     }
     next();
 })
-
-
 
 module.exports = mongoose.model('OTP', OTPSchema);

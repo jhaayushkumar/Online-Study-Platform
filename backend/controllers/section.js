@@ -1,3 +1,13 @@
+/**
+ * @file section.js
+ * @description Course section management controller for the StudyX platform
+ * @module controllers/section
+ * 
+ * Manages course sections (chapters) including creating new sections,
+ * updating section names, and deleting sections. Each section contains
+ * multiple subsections (lectures) and belongs to a specific course.
+ */
+
 const Course = require('../models/course');
 const Section = require('../models/section');
 

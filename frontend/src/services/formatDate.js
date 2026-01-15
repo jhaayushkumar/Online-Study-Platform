@@ -1,3 +1,13 @@
+/**
+ * @file formatDate.js
+ * @description Date formatting service for course and content dates
+ * @module services/formatDate
+ * 
+ * Formats date strings into localized US English format with full month,
+ * day, and year. Handles null/undefined inputs gracefully. Used in course
+ * details page and other components displaying creation or update dates.
+ */
+
 export const formatDate = (dateString) => {
   if (!dateString) return null;
 
