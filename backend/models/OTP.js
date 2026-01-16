@@ -43,11 +43,10 @@ async function sendVerificationEmail(email, otp) {
 
 OTPSchema.pre('save', async function(next) {
     if (this.isNew) {
-        try {
-            await sendVerificationEmail(this.email, this.otp);
-        } catch (error) {
-            console.log('Email sending failed, but OTP saved for testing');
-        }
+        // Send email asynchronously without blocking
+        sendVerificationEmail(this.email, this.otp)
+            .then(() => console.log('OTP email sent successfully'))
+            .catch(error => console.log('Email sending failed:', error.message));
     }
     next();
 })

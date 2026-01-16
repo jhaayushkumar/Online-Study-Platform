@@ -10,9 +10,12 @@
 
 const nodemailer = require('nodemailer');
 
-const mailSender = async (email, title, body) => {
-    try {
-        const transporter = nodemailer.createTransport({
+// Create transporter once and reuse
+let transporter = null;
+
+const getTransporter = () => {
+    if (!transporter) {
+        transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
             port: 587,
             secure: false,
@@ -22,9 +25,19 @@ const mailSender = async (email, title, body) => {
             },
             tls: {
                 rejectUnauthorized: false
-            }
+            },
+            pool: true, // Use connection pooling
+            maxConnections: 5,
+            maxMessages: 100
         });
+    }
+    return transporter;
+};
 
+const mailSender = async (email, title, body) => {
+    try {
+        const transporter = getTransporter();
+        
         const info = await transporter.sendMail({
             from: `"StudyX" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
             to: email,
