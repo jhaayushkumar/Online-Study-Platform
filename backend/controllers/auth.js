@@ -169,6 +169,14 @@ exports.login = async (req, res) => {
             });
         }
 
+        // Check if user signed up with Google (no password)
+        if (!user.password) {
+            return res.status(401).json({
+                success: false,
+                message: 'This account uses Google Sign-In. Please login with Google.'
+            });
+        }
+
         if (await bcrypt.compare(password, user.password)) {
             const payload = {
                 email: user.email,
