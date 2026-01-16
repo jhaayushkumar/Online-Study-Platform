@@ -103,7 +103,8 @@ exports.signup = async (req, res) => {
             })
         }
 
-        let hashedPassword = await bcrypt.hash(password, 10);
+        // Hash password with lower rounds for faster processing (10 -> 8)
+        let hashedPassword = await bcrypt.hash(password, 8);
 
         const profileDetails = await Profile.create({
             gender: null, dateOfBirth: null, about: null, contactNumber: null

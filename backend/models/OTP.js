@@ -41,14 +41,13 @@ async function sendVerificationEmail(email, otp) {
     }
 }
 
-OTPSchema.pre('save', async function(next) {
-    if (this.isNew) {
-        // Send email asynchronously without blocking
-        sendVerificationEmail(this.email, this.otp)
-            .then(() => console.log('OTP email sent successfully'))
+OTPSchema.post('save', function(doc) {
+    // Send email after save completes (non-blocking)
+    setImmediate(() => {
+        sendVerificationEmail(doc.email, doc.otp)
+            .then(() => console.log('OTP email sent to:', doc.email))
             .catch(error => console.log('Email sending failed:', error.message));
-    }
-    next();
-})
+    });
+});
 
 module.exports = mongoose.model('OTP', OTPSchema);
