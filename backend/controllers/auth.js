@@ -21,10 +21,13 @@ const otpTemplate = require('../mail/templates/emailVerificationTemplate');
 const { passwordUpdated } = require("../mail/templates/passwordUpdate");
 
 exports.sendOTP = async (req, res) => {
+    console.log('[sendOTP] Request received at:', new Date().toISOString());
     try {
         const { email } = req.body;
+        console.log('[sendOTP] Email:', email);
 
         const checkUserPresent = await User.findOne({ email });
+        console.log('[sendOTP] User check done');
 
         if (checkUserPresent) {
             console.log('(when otp generate) User alreay registered')
@@ -39,25 +42,19 @@ exports.sendOTP = async (req, res) => {
             lowerCaseAlphabets: false,
             specialChars: false
         })
+        console.log('[sendOTP] OTP generated:', otp);
 
-        const otpBody = await OTP.create({ email, otp });
+        console.log('[sendOTP] Creating OTP in DB...');
+        await OTP.create({ email, otp });
+        console.log('[sendOTP] OTP saved to DB');
 
-        // TEMPORARILY DISABLED - Email sending in background
-        // setImmediate(() => {
-        //     const name = email.split('@')[0];
-        //     const emailBody = otpTemplate(otp, name);
-        //     mailSender(email, 'Verification Email from StudyX', emailBody)
-        //         .then(() => console.log('OTP email sent to:', email))
-        //         .catch(error => console.log('Email failed:', error.message));
-        // });
-
-        console.log('OTP generated for', email, ':', otp);
-
+        console.log('[sendOTP] Sending response...');
         res.status(200).json({
             success: true,
             otp,
             message: 'Otp sent successfully'
         });
+        console.log('[sendOTP] Response sent');
     }
 
     catch (error) {
