@@ -16,19 +16,14 @@ let transporter = null;
 const getTransporter = () => {
     if (!transporter) {
         transporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST,
-            port: 587,
-            secure: false,
+            service: 'gmail',
             auth: {
                 user: process.env.MAIL_USER,
                 pass: process.env.MAIL_PASS
             },
-            tls: {
-                rejectUnauthorized: false
-            },
-            pool: true, // Use connection pooling
-            maxConnections: 5,
-            maxMessages: 100
+            connectionTimeout: 10000, // 10 seconds
+            greetingTimeout: 10000,
+            socketTimeout: 10000
         });
     }
     return transporter;
@@ -39,12 +34,13 @@ const mailSender = async (email, title, body) => {
         const transporter = getTransporter();
         
         const info = await transporter.sendMail({
-            from: `"StudyX" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
+            from: `"StudyX" <${process.env.MAIL_USER}>`,
             to: email,
             subject: title,
             html: body
         });
 
+        console.log('Email sent successfully to:', email);
         return info;
     }
     catch (error) {

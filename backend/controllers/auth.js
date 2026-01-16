@@ -21,16 +21,12 @@ const otpTemplate = require('../mail/templates/emailVerificationTemplate');
 const { passwordUpdated } = require("../mail/templates/passwordUpdate");
 
 exports.sendOTP = async (req, res) => {
-    console.log('[sendOTP] Request received at:', new Date().toISOString());
     try {
         const { email } = req.body;
-        console.log('[sendOTP] Email:', email);
 
         const checkUserPresent = await User.findOne({ email });
-        console.log('[sendOTP] User check done');
 
         if (checkUserPresent) {
-            console.log('(when otp generate) User alreay registered')
             return res.status(401).json({
                 success: false,
                 message: 'User is Already Registered'
@@ -42,27 +38,29 @@ exports.sendOTP = async (req, res) => {
             lowerCaseAlphabets: false,
             specialChars: false
         })
-        console.log('[sendOTP] OTP generated:', otp);
 
-        console.log('[sendOTP] Creating OTP in DB...');
         await OTP.create({ email, otp });
-        console.log('[sendOTP] OTP saved to DB');
 
-        console.log('[sendOTP] Sending response...');
+        // Send response immediately (don't wait for email)
         res.status(200).json({
             success: true,
-            otp,
-            message: 'Otp sent successfully'
+            message: 'OTP sent successfully'
         });
-        console.log('[sendOTP] Response sent');
+
+        // Send email in background (non-blocking)
+        const name = email.split('@')[0];
+        const emailBody = otpTemplate(otp, name);
+        mailSender(email, 'Verification Email from StudyX', emailBody)
+            .then(() => console.log('OTP email sent to:', email))
+            .catch(error => console.log('Email failed:', error.message));
     }
 
     catch (error) {
         console.log('Error while generating Otp - ', error);
-        res.status(200).json({
+        res.status(500).json({
             success: false,
             message: 'Error while generating Otp',
-            error: error.mesage
+            error: error.message
         });
     }
 }
