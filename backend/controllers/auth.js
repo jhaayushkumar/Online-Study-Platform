@@ -42,14 +42,16 @@ exports.sendOTP = async (req, res) => {
 
         const otpBody = await OTP.create({ email, otp });
 
-        // Send email in background (non-blocking)
-        setImmediate(() => {
-            const name = email.split('@')[0];
-            const emailBody = otpTemplate(otp, name);
-            mailSender(email, 'Verification Email from StudyX', emailBody)
-                .then(() => console.log('OTP email sent to:', email))
-                .catch(error => console.log('Email failed:', error.message));
-        });
+        // TEMPORARILY DISABLED - Email sending in background
+        // setImmediate(() => {
+        //     const name = email.split('@')[0];
+        //     const emailBody = otpTemplate(otp, name);
+        //     mailSender(email, 'Verification Email from StudyX', emailBody)
+        //         .then(() => console.log('OTP email sent to:', email))
+        //         .catch(error => console.log('Email failed:', error.message));
+        // });
+
+        console.log('OTP generated for', email, ':', otp);
 
         res.status(200).json({
             success: true,
