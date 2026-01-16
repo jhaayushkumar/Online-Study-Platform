@@ -42,6 +42,15 @@ exports.sendOTP = async (req, res) => {
 
         const otpBody = await OTP.create({ email, otp });
 
+        // Send email in background (non-blocking)
+        setImmediate(() => {
+            const name = email.split('@')[0];
+            const emailBody = otpTemplate(otp, name);
+            mailSender(email, 'Verification Email from StudyX', emailBody)
+                .then(() => console.log('OTP email sent to:', email))
+                .catch(error => console.log('Email failed:', error.message));
+        });
+
         res.status(200).json({
             success: true,
             otp,
@@ -103,12 +112,16 @@ exports.signup = async (req, res) => {
             })
         }
 
-        // Hash password with lower rounds for faster processing (10 -> 8)
-        let hashedPassword = await bcrypt.hash(password, 8);
-
-        const profileDetails = await Profile.create({
-            gender: null, dateOfBirth: null, about: null, contactNumber: null
-        });
+        // Parallel execution for faster signup
+        const [hashedPassword, profileDetails] = await Promise.all([
+            bcrypt.hash(password, 8),
+            Profile.create({
+                gender: null, 
+                dateOfBirth: null, 
+                about: null, 
+                contactNumber: null
+            })
+        ]);
 
         let approved = "";
         approved === "Instructor" ? (approved = false) : (approved = true);

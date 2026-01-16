@@ -41,13 +41,13 @@ async function sendVerificationEmail(email, otp) {
     }
 }
 
-OTPSchema.post('save', function(doc) {
-    // Send email after save completes (non-blocking)
-    setImmediate(() => {
-        sendVerificationEmail(doc.email, doc.otp)
-            .then(() => console.log('OTP email sent to:', doc.email))
-            .catch(error => console.log('Email sending failed:', error.message));
-    });
-});
+// Email sending moved to controller for better performance
+// OTPSchema.post('save', function(doc) {
+//     setImmediate(() => {
+//         sendVerificationEmail(doc.email, doc.otp)
+//             .then(() => console.log('OTP email sent to:', doc.email))
+//             .catch(error => console.log('Email sending failed:', error.message));
+//     });
+// });
 
 module.exports = mongoose.model('OTP', OTPSchema);
