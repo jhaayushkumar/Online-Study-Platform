@@ -55,8 +55,9 @@ app.get('/', (req, res) => {
     res.status(200).json({
         success: true,
         message: 'StudyX API is running',
-        version: '1.0.0',
-        environment: process.env.NODE_ENV || 'development'
+        version: '1.0.2',
+        environment: process.env.NODE_ENV || 'development',
+        deployedAt: '2026-01-16T08:45:00Z'
     });
 });
 
