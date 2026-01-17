@@ -267,7 +267,6 @@ export default function CoursesTable({ courses, setCourses, loading, setLoading 
                         >
                           <RiDeleteBin6Line size={14} />
                           <span className="text-xs font-medium">Delete</span>
-                        </span>
                         </button>
                       </div>
                     </Td>
