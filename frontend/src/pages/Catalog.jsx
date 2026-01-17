@@ -31,39 +31,45 @@ function Catalog() {
     const [active, setActive] = useState(1)
     const [catalogPageData, setCatalogPageData] = useState(null)
     const [categoryId, setCategoryId] = useState("")
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    // Fetch category and data together for faster loading
+    // Fetch All Categories
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
+        const fetchCategoryId = async () => {
             try {
-                // Fetch categories
-                const categories = await fetchCourseCategories();
-                const category = categories.find(
+                const res = await fetchCourseCategories();
+                const category_id = res.filter(
                     (ct) => ct.name.split(" ").join("-").toLowerCase() === catalogName
-                );
-                
-                if (category) {
-                    setCategoryId(category._id);
-                    // Immediately fetch catalog data
-                    const catalogData = await getCatalogPageData(category._id);
-                    setCatalogPageData(catalogData);
-                }
+                )[0]._id
+                setCategoryId(category_id)
             } catch (error) {
-                console.log("Error fetching catalog data:", error);
-            } finally {
-                setLoading(false);
+                console.log("Could not fetch Categories.", error)
             }
-        };
-        
-        fetchData();
-    }, [catalogName]);
+        }
+        fetchCategoryId();
+    }, [catalogName])
+
+
+    useEffect(() => {
+        const fetchCatalogData = async () => {
+            if (categoryId) {
+                setLoading(true)
+                try {
+                    const res = await getCatalogPageData(categoryId)
+                    setCatalogPageData(res)
+                } catch (error) {
+                    console.log(error)
+                }
+                setLoading(false)
+            }
+        }
+        fetchCatalogData();
+    }, [categoryId])
 
     // console.log('======================================= ', catalogPageData)
     // console.log('categoryId ==================================== ', categoryId)
 
-    if (loading) {
+    if (loading || !catalogPageData) {
         return (
             <div className="min-h-[calc(100vh-3.5rem)]">
                 {/* Hero Section Skeleton */}
@@ -85,12 +91,6 @@ function Catalog() {
                 </div>
             </div>
         )
-    }
-    if (!loading && !catalogPageData) {
-        return (
-            <div className="text-white text-4xl flex justify-center items-center mt-[20%]">
-                No Courses found for selected Category
-            </div>)
     }
 
 
