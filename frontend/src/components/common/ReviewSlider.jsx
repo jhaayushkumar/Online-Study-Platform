@@ -53,6 +53,8 @@ function ReviewSlider() {
   // console.log('reviews= ', reviews)
   if(!reviews) return;
 
+  // Only enable loop if we have enough reviews
+  const shouldLoop = reviews?.length >= 4;
 
   return (
     <div className="text-white">
@@ -73,7 +75,7 @@ function ReviewSlider() {
             },
           }}
           spaceBetween={25}
-          loop={true}
+          loop={shouldLoop}
           freeMode={true}
           autoplay={{
             delay: 2500,
