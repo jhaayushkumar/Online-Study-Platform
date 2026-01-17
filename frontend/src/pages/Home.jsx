@@ -121,36 +121,80 @@ const Home = () => {
 
 
 
-                    <motion.div
-                        variants={fadeIn('left', 0.1)}
-                        initial='hidden'
-                        whileInView={'show'}
-                        viewport={{ once: false, amount: 0.1 }}
-                        className='text-center text-3xl lg:text-4xl font-semibold mt-7  '
-                    >
-                        Empower Your Future with
-                        <HighlightText text={"Coding Skills"} />
-                    </motion.div>
+                    {/* Show different content based on user type */}
+                    {user && user.accountType === 'Instructor' ? (
+                        // Instructor-specific content
+                        <>
+                            <motion.div
+                                variants={fadeIn('left', 0.1)}
+                                initial='hidden'
+                                whileInView={'show'}
+                                viewport={{ once: false, amount: 0.1 }}
+                                className='text-center text-3xl lg:text-4xl font-semibold mt-7'
+                            >
+                                Welcome Back, 
+                                <HighlightText text={` ${user.firstName}!`} />
+                            </motion.div>
 
-                    <motion.div
-                        variants={fadeIn('right', 0.1)}
-                        initial='hidden'
-                        whileInView={'show'}
-                        viewport={{ once: false, amount: 0.1 }}
-                        className=' mt-4 w-[90%] text-center text-base lg:text-lg font-bold text-richblack-300'
-                    >
-                        With our online coding courses, you can learn at your own pace, from anywhere in the world, and get access to a wealth of resources, including hands-on projects, quizzes, and personalized feedback from instructors.
-                    </motion.div>
+                            <motion.div
+                                variants={fadeIn('right', 0.1)}
+                                initial='hidden'
+                                whileInView={'show'}
+                                viewport={{ once: false, amount: 0.1 }}
+                                className='mt-4 w-[90%] text-center text-base lg:text-lg font-bold text-richblack-300'
+                            >
+                                Ready to inspire and educate? Create engaging courses, track student progress, and build your teaching legacy on our platform.
+                            </motion.div>
+                        </>
+                    ) : (
+                        // Student/Guest content
+                        <>
+                            <motion.div
+                                variants={fadeIn('left', 0.1)}
+                                initial='hidden'
+                                whileInView={'show'}
+                                viewport={{ once: false, amount: 0.1 }}
+                                className='text-center text-3xl lg:text-4xl font-semibold mt-7'
+                            >
+                                Empower Your Future with
+                                <HighlightText text={"Coding Skills"} />
+                            </motion.div>
+
+                            <motion.div
+                                variants={fadeIn('right', 0.1)}
+                                initial='hidden'
+                                whileInView={'show'}
+                                viewport={{ once: false, amount: 0.1 }}
+                                className='mt-4 w-[90%] text-center text-base lg:text-lg font-bold text-richblack-300'
+                            >
+                                With our online coding courses, you can learn at your own pace, from anywhere in the world, and get access to a wealth of resources, including hands-on projects, quizzes, and personalized feedback from instructors.
+                            </motion.div>
+                        </>
+                    )}
 
 
                     <div className='flex flex-row gap-7 mt-8'>
-                        <CTAButton active={true} linkto={"/about"}>
-                            Learn More
-                        </CTAButton>
-
-                        <CTAButton active={false} linkto={"/contact"}>
-                            Book a Demo
-                        </CTAButton>
+                        {user && user.accountType === 'Instructor' ? (
+                            // Instructor-specific buttons
+                            <>
+                                <CTAButton active={true} linkto={"/dashboard/add-course"}>
+                                    Create Course
+                                </CTAButton>
+                                <CTAButton active={false} linkto={"/dashboard/my-courses"}>
+                                    My Courses
+                                </CTAButton>
+                            </>
+                        ) : (
+                            // Student/Guest buttons
+                            <>
+                                <CTAButton active={true} linkto={"/about"}>
+                                    Learn More
+                                </CTAButton>
+                                <CTAButton active={false} linkto={"/contact"}>
+                                    Book a Demo
+                                </CTAButton>
+                            </>
+                        )}
                     </div>
                 </div>
 
@@ -221,16 +265,16 @@ const Home = () => {
                         />
                     </div>
 
-                    {/* course slider */}
+                    {/* course slider - show different content for instructors */}
                     <div className='mx-auto box-content w-full max-w-maxContentTab px- py-12 lg:max-w-maxContent'>
                         <h2 className='text-white mb-6 text-2xl '>
-                            Popular Picks for You 🏆
+                            {user && user.accountType === 'Instructor' ? 'Trending Courses in Your Field 📈' : 'Popular Picks for You 🏆'}
                         </h2>
                         <Course_Slider Courses={CatalogPageData?.selectedCategory?.courses} />
                     </div>
                     <div className=' mx-auto box-content w-full max-w-maxContentTab px- py-12 lg:max-w-maxContent'>
                         <h2 className='text-white mb-6 text-2xl '>
-                            Top Enrollments Today 🔥
+                            {user && user.accountType === 'Instructor' ? 'Most Successful Courses 💰' : 'Top Enrollments Today 🔥'}
                         </h2>
                         <Course_Slider Courses={CatalogPageData?.mostSellingCourses} />
                     </div>
@@ -245,17 +289,37 @@ const Home = () => {
                         <div className='w-11/12 max-w-maxContent flex flex-col items-center justify-between gap-5 mx-auto'>
                             <div className='h-[150px]'></div>
                             <div className='flex flex-row gap-7 text-white '>
-                                <CTAButton active={true} linkto={"/signup"}>
-                                    <div className='flex items-center gap-3' >
-                                        Explore Full Catalog
-                                        <FaArrowRight />
-                                    </div>
-                                </CTAButton>
-                                <CTAButton active={false} linkto={"/about"}>
-                                    <div>
-                                        Learn more
-                                    </div>
-                                </CTAButton>
+                                {user && user.accountType === 'Instructor' ? (
+                                    // Instructor-specific buttons
+                                    <>
+                                        <CTAButton active={true} linkto={"/dashboard/instructor"}>
+                                            <div className='flex items-center gap-3' >
+                                                View Analytics
+                                                <FaArrowRight />
+                                            </div>
+                                        </CTAButton>
+                                        <CTAButton active={false} linkto={"/dashboard/add-course"}>
+                                            <div>
+                                                Create Course
+                                            </div>
+                                        </CTAButton>
+                                    </>
+                                ) : (
+                                    // Student/Guest buttons
+                                    <>
+                                        <CTAButton active={true} linkto={"/signup"}>
+                                            <div className='flex items-center gap-3' >
+                                                Explore Full Catalog
+                                                <FaArrowRight />
+                                            </div>
+                                        </CTAButton>
+                                        <CTAButton active={false} linkto={"/about"}>
+                                            <div>
+                                                Learn more
+                                            </div>
+                                        </CTAButton>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -263,17 +327,29 @@ const Home = () => {
                     <div className='mx-auto w-11/12 max-w-maxContent flex flex-col items-center justify-between gap-7'>
                         <div className='flex flex-col lg:flex-row gap-5 mb-10 mt-[95px]'>
                             <div className='text-3xl lg:text-4xl font-semibold w-full lg:w-[45%]'>
-                                Get the Skills you need for a
-                                <HighlightText text={"Job that is in demand"} />
+                                {user && user.accountType === 'Instructor' ? (
+                                    <>
+                                        Share Your Expertise and
+                                        <HighlightText text={"Earn While Teaching"} />
+                                    </>
+                                ) : (
+                                    <>
+                                        Get the Skills you need for a
+                                        <HighlightText text={"Job that is in demand"} />
+                                    </>
+                                )}
                             </div>
 
                             <div className='flex flex-col gap-10 w-full lg:w-[40%] items-start'>
                                 <div className='text-[16px]'>
-                                    The modern StudyX dictates its own terms. Today, to be a competitive specialist requires more than professional skills.
+                                    {user && user.accountType === 'Instructor' ? 
+                                        'Join thousands of successful instructors who are making a difference. Create courses, build your reputation, and generate income by sharing your knowledge with eager learners worldwide.' :
+                                        'The modern StudyX dictates its own terms. Today, to be a competitive specialist requires more than professional skills.'
+                                    }
                                 </div>
-                                <CTAButton active={true} linkto={"/signup"}>
+                                <CTAButton active={true} linkto={user && user.accountType === 'Instructor' ? "/dashboard/add-course" : "/signup"}>
                                     <div>
-                                        Learn more
+                                        {user && user.accountType === 'Instructor' ? 'Start Teaching' : 'Learn more'}
                                     </div>
                                 </CTAButton>
                             </div>
