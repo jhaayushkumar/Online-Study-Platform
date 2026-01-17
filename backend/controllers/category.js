@@ -80,18 +80,22 @@ exports.getCategoryPageDetails = async (req, res) => {
     try {
         const { categoryId } = req.body
 
-        // Get courses for the specified category (optimized with lean and select)
-        const selectedCategory = await Category.findById(categoryId)
-            .populate({
-                path: "courses",
-                match: { status: "Published" },
-                select: "courseName courseDescription thumbnail price instructor studentsEnrolled ratingAndReviews",
-                populate: [
-                    { path: "instructor", select: "firstName lastName email image" }
-                ],
-            })
-            .lean()
-            .exec()
+        // Parallel execution for faster response
+        const [selectedCategory, categoriesExceptSelected] = await Promise.all([
+            // Get selected category courses
+            Category.findById(categoryId)
+                .populate({
+                    path: "courses",
+                    match: { status: "Published" },
+                    select: "courseName courseDescription thumbnail price instructor studentsEnrolled",
+                    populate: { path: "instructor", select: "firstName lastName image" }
+                })
+                .lean()
+                .exec(),
+            
+            // Get other categories (just IDs)
+            Category.find({ _id: { $ne: categoryId } }).select('_id').lean()
+        ]);
 
         if (!selectedCategory) {
             return res.status(404).json({ success: false, message: "Category not found" })
@@ -100,46 +104,28 @@ exports.getCategoryPageDetails = async (req, res) => {
         if (selectedCategory.courses.length === 0) {
             return res.status(404).json({
                 success: false,
-                data: null,
                 message: "No courses found for the selected category.",
             })
         }
 
-        // Get courses for other categories (optimized)
-        const categoriesExceptSelected = await Category.find({
-            _id: { $ne: categoryId },
-        }).select('_id').lean()
-
-        let differentCategory = await Category.findOne(
-            categoriesExceptSelected[getRandomInt(categoriesExceptSelected.length)]._id
-        )
+        // Get random different category
+        const randomCategoryId = categoriesExceptSelected[getRandomInt(categoriesExceptSelected.length)]._id;
+        
+        const differentCategory = await Category.findById(randomCategoryId)
             .populate({
                 path: "courses",
                 match: { status: "Published" },
                 select: "courseName courseDescription thumbnail price instructor studentsEnrolled",
-                populate: { path: "instructor", select: "firstName lastName email image" }
+                populate: { path: "instructor", select: "firstName lastName image" },
+                options: { limit: 10 } // Limit courses
             })
             .lean()
-            .exec()
+            .exec();
 
-        // Get top-selling courses (optimized - only fetch needed data)
-        const allCategories = await Category.find()
-            .populate({
-                path: "courses",
-                match: { status: "Published" },
-                select: "courseName courseDescription thumbnail price instructor studentsEnrolled",
-                populate: {
-                    path: "instructor",
-                    select: "firstName lastName email image"
-                },
-            })
-            .lean()
-            .exec()
-
-        const allCourses = allCategories.flatMap((category) => category.courses)
-        const mostSellingCourses = allCourses
+        // Simplified most selling - just use selected category courses sorted
+        const mostSellingCourses = [...selectedCategory.courses]
             .sort((a, b) => b.studentsEnrolled.length - a.studentsEnrolled.length)
-            .slice(0, 10)
+            .slice(0, 10);
 
         res.status(200).json({
             success: true,
