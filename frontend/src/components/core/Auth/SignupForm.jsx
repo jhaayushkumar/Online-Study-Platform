@@ -31,10 +31,6 @@ function SignupForm() {
   // Get accountType from URL query parameter, default to STUDENT
   const accountTypeFromUrl = searchParams.get('accountType');
   
-  console.log('SignupForm - Full URL:', window.location.href);
-  console.log('SignupForm - Search params:', searchParams.toString());
-  console.log('SignupForm - accountTypeFromUrl:', accountTypeFromUrl);
-  
   // student or instructor
   const [accountType, setAccountType] = useState(
     accountTypeFromUrl === 'Instructor' ? ACCOUNT_TYPE.INSTRUCTOR : ACCOUNT_TYPE.STUDENT
@@ -42,11 +38,7 @@ function SignupForm() {
 
   // Set account type from URL parameter when component mounts or URL changes
   useEffect(() => {
-    console.log('SignupForm useEffect - accountTypeFromUrl:', accountTypeFromUrl);
-    console.log('SignupForm useEffect - ACCOUNT_TYPE.INSTRUCTOR:', ACCOUNT_TYPE.INSTRUCTOR);
-    
     if (accountTypeFromUrl === 'Instructor') {
-      console.log('Setting accountType to INSTRUCTOR');
       setAccountType(ACCOUNT_TYPE.INSTRUCTOR);
     }
   }, [accountTypeFromUrl]);
