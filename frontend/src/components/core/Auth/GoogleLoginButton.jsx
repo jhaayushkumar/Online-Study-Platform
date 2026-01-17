@@ -8,6 +8,7 @@
  * stores JWT token and user data, and redirects based on account type.
  */
 
+import { useState, useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -21,10 +22,17 @@ const GoogleLoginButton = ({ accountType }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const [isLoaded, setIsLoaded] = useState(false);
     
     // Get accountType from props or URL parameter
     const accountTypeFromUrl = searchParams.get('accountType');
     const finalAccountType = accountType || accountTypeFromUrl || 'Student';
+
+    useEffect(() => {
+        // Set loaded after a short delay to ensure Google script is ready
+        const timer = setTimeout(() => setIsLoaded(true), 500);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleSuccess = async (credentialResponse) => {
         const toastId = toast.loading('Signing in with Google...');
@@ -70,16 +78,22 @@ const GoogleLoginButton = ({ accountType }) => {
     };
 
     return (
-        <div className="w-full flex justify-center">
-            <GoogleLogin
-                onSuccess={handleSuccess}
-                onError={handleError}
-                useOneTap={false}
-                theme="filled_black"
-                size="large"
-                text="continue_with"
-                shape="rectangular"
-            />
+        <div className="w-full flex justify-center min-h-[44px]">
+            {!isLoaded ? (
+                <div className="w-full flex items-center justify-center py-2">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-50"></div>
+                </div>
+            ) : (
+                <GoogleLogin
+                    onSuccess={handleSuccess}
+                    onError={handleError}
+                    useOneTap={false}
+                    theme="filled_black"
+                    size="large"
+                    text="continue_with"
+                    shape="rectangular"
+                />
+            )}
         </div>
     );
 };
