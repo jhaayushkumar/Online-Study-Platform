@@ -8,7 +8,7 @@
  * stores JWT token and user data, and redirects based on account type.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -22,15 +22,27 @@ const GoogleLoginButton = ({ accountType }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isReady, setIsReady] = useState(false);
+    const containerRef = useRef(null);
     
     // Get accountType from props or URL parameter
     const accountTypeFromUrl = searchParams.get('accountType');
     const finalAccountType = accountType || accountTypeFromUrl || 'Student';
 
     useEffect(() => {
-        // Set loaded after a short delay to ensure Google script is ready
-        const timer = setTimeout(() => setIsLoaded(true), 500);
+        // Check if Google script is loaded
+        const checkGoogleLoaded = () => {
+            if (window.google && window.google.accounts) {
+                setIsReady(true);
+            } else {
+                // Retry after a short delay
+                setTimeout(checkGoogleLoaded, 100);
+            }
+        };
+
+        // Start checking after component mounts
+        const timer = setTimeout(checkGoogleLoaded, 100);
+        
         return () => clearTimeout(timer);
     }, []);
 
@@ -78,21 +90,23 @@ const GoogleLoginButton = ({ accountType }) => {
     };
 
     return (
-        <div className="w-full flex justify-center min-h-[44px]">
-            {!isLoaded ? (
+        <div ref={containerRef} className="w-full flex justify-center min-h-[44px] items-center">
+            {!isReady ? (
                 <div className="w-full flex items-center justify-center py-2">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-50"></div>
                 </div>
             ) : (
-                <GoogleLogin
-                    onSuccess={handleSuccess}
-                    onError={handleError}
-                    useOneTap={false}
-                    theme="filled_black"
-                    size="large"
-                    text="continue_with"
-                    shape="rectangular"
-                />
+                <div className="w-full flex justify-center">
+                    <GoogleLogin
+                        onSuccess={handleSuccess}
+                        onError={handleError}
+                        useOneTap={false}
+                        theme="filled_black"
+                        size="large"
+                        text="continue_with"
+                        shape="rectangular"
+                    />
+                </div>
             )}
         </div>
     );
