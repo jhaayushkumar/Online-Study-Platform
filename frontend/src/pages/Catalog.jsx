@@ -31,46 +31,58 @@ function Catalog() {
     const [active, setActive] = useState(1)
     const [catalogPageData, setCatalogPageData] = useState(null)
     const [categoryId, setCategoryId] = useState("")
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    // Fetch All Categories
+    // Fetch category and data together for faster loading
     useEffect(() => {
-        ; (async () => {
+        const fetchData = async () => {
+            setLoading(true);
             try {
-                const res = await fetchCourseCategories();
-                const category_id = res.filter(
+                // Fetch categories
+                const categories = await fetchCourseCategories();
+                const category = categories.find(
                     (ct) => ct.name.split(" ").join("-").toLowerCase() === catalogName
-                )[0]._id
-                setCategoryId(category_id)
-            } catch (error) {
-                console.log("Could not fetch Categories.", error)
-            }
-        })()
-    }, [catalogName])
-
-
-    useEffect(() => {
-        if (categoryId) {
-            ; (async () => {
-                setLoading(true)
-                try {
-                    const res = await getCatalogPageData(categoryId)
-                    setCatalogPageData(res)
-                } catch (error) {
-                    console.log(error)
+                );
+                
+                if (category) {
+                    setCategoryId(category._id);
+                    // Immediately fetch catalog data
+                    const catalogData = await getCatalogPageData(category._id);
+                    setCatalogPageData(catalogData);
                 }
-                setLoading(false)
-            })()
-        }
-    }, [categoryId])
+            } catch (error) {
+                console.log("Error fetching catalog data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchData();
+    }, [catalogName]);
 
     // console.log('======================================= ', catalogPageData)
     // console.log('categoryId ==================================== ', categoryId)
 
     if (loading) {
         return (
-            <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center">
-                <Loading />
+            <div className="min-h-[calc(100vh-3.5rem)]">
+                {/* Hero Section Skeleton */}
+                <div className="box-content bg-richblack-800 px-4">
+                    <div className="mx-auto flex min-h-[260px] max-w-maxContentTab flex-col justify-center gap-4 lg:max-w-maxContent">
+                        <div className="h-4 w-48 bg-richblack-700 rounded animate-pulse"></div>
+                        <div className="h-8 w-64 bg-richblack-700 rounded animate-pulse"></div>
+                        <div className="h-4 w-full max-w-[870px] bg-richblack-700 rounded animate-pulse"></div>
+                    </div>
+                </div>
+                {/* Content Skeleton */}
+                <div className="mx-auto box-content w-full max-w-maxContentTab px-4 py-12 lg:max-w-maxContent">
+                    <div className="h-8 w-48 bg-richblack-700 rounded animate-pulse mb-4"></div>
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="h-[250px] bg-richblack-800 rounded-xl animate-pulse"></div>
+                        ))}
+                    </div>
+                </div>
             </div>
         )
     }
