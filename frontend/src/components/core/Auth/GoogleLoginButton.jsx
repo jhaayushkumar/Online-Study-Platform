@@ -77,7 +77,6 @@ const GoogleLoginButton = ({ accountType }) => {
                 useOneTap={false}
                 theme="filled_black"
                 size="large"
-                width="100%"
                 text="continue_with"
                 shape="rectangular"
             />
