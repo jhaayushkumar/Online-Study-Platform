@@ -31,7 +31,8 @@ const GoogleLoginButton = ({ accountType }) => {
 
     useEffect(() => {
         let attempts = 0;
-        const maxAttempts = 50; // 5 seconds max wait
+        const maxAttempts = 30; // 3 seconds max wait
+        let timeoutId;
         
         // Check if Google script is loaded
         const checkGoogleLoaded = () => {
@@ -41,7 +42,7 @@ const GoogleLoginButton = ({ accountType }) => {
                 setIsReady(true);
             } else if (attempts < maxAttempts) {
                 // Retry after a short delay
-                setTimeout(checkGoogleLoaded, 100);
+                timeoutId = setTimeout(checkGoogleLoaded, 100);
             } else {
                 // Timeout - show button anyway
                 console.warn('Google script loading timeout, showing button anyway');
@@ -49,8 +50,12 @@ const GoogleLoginButton = ({ accountType }) => {
             }
         };
 
-        // Start checking after component mounts
+        // Start checking immediately
         checkGoogleLoaded();
+        
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+        };
     }, []);
 
     const handleSuccess = async (credentialResponse) => {
