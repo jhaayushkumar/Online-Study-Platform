@@ -119,19 +119,7 @@ const Home = () => {
                 {/*Section1  */}
                 <div className='relative h-[450px] md:h-[550px] justify-center mx-auto flex flex-col w-11/12 max-w-maxContent items-center text-white '>
 
-                    {/* Show button only if user is not logged in, or is logged in but not an instructor */}
-                    {(!token || (user && user.accountType !== 'Instructor')) && (
-                        <Link to="/signup?accountType=Instructor">
-                            <div className='z-10 group p-1 mx-auto rounded-full bg-richblack-800 font-bold text-richblack-200
-                                            transition-all duration-200 hover:scale-95 w-fit'>
-                                <div className='flex flex-row items-center gap-2 rounded-full px-10 py-[5px]
-                                  transition-all duration-200 group-hover:bg-richblack-900'>
-                                    <p>Become an Instructor</p>
-                                    <FaArrowRight />
-                                </div>
-                            </div>
-                        </Link>
-                    )}
+
 
                     <motion.div
                         variants={fadeIn('left', 0.1)}
