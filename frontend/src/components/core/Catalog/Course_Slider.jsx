@@ -14,8 +14,8 @@ import Course_Card from "./Course_Card"
 
 
 function Course_Slider({ Courses }) {
-  // Only enable loop if we have enough slides
-  const shouldLoop = Courses?.length >= 3;
+  // Disable loop to avoid warnings - we have limited courses
+  const shouldLoop = false;
   
   return (
     <>

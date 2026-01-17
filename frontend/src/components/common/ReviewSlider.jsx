@@ -53,8 +53,8 @@ function ReviewSlider() {
   // console.log('reviews= ', reviews)
   if(!reviews) return;
 
-  // Only enable loop if we have enough reviews
-  const shouldLoop = reviews?.length >= 4;
+  // Disable loop to avoid warnings
+  const shouldLoop = false;
 
   return (
     <div className="text-white">
