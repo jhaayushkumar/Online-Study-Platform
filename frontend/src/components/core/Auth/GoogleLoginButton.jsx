@@ -82,7 +82,6 @@ const GoogleLoginButton = ({ accountType }) => {
                 text="continue_with"
                 shape="rectangular"
                 ux_mode="popup"
-                width="100%"
             />
         </div>
     );
