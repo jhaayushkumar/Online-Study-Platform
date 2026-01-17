@@ -30,20 +30,27 @@ const GoogleLoginButton = ({ accountType }) => {
     const finalAccountType = accountType || accountTypeFromUrl || 'Student';
 
     useEffect(() => {
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds max wait
+        
         // Check if Google script is loaded
         const checkGoogleLoaded = () => {
+            attempts++;
+            
             if (window.google && window.google.accounts) {
                 setIsReady(true);
-            } else {
+            } else if (attempts < maxAttempts) {
                 // Retry after a short delay
                 setTimeout(checkGoogleLoaded, 100);
+            } else {
+                // Timeout - show button anyway
+                console.warn('Google script loading timeout, showing button anyway');
+                setIsReady(true);
             }
         };
 
         // Start checking after component mounts
-        const timer = setTimeout(checkGoogleLoaded, 100);
-        
-        return () => clearTimeout(timer);
+        checkGoogleLoaded();
     }, []);
 
     const handleSuccess = async (credentialResponse) => {
