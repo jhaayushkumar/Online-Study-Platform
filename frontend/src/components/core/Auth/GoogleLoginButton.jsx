@@ -72,7 +72,7 @@ const GoogleLoginButton = ({ accountType }) => {
     };
 
     return (
-        <div className="w-full flex justify-center">
+        <div className="w-full google-login-container">
             <GoogleLogin
                 onSuccess={handleSuccess}
                 onError={handleError}
@@ -82,6 +82,7 @@ const GoogleLoginButton = ({ accountType }) => {
                 text="continue_with"
                 shape="rectangular"
                 ux_mode="popup"
+                width="100%"
             />
         </div>
     );

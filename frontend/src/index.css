@@ -224,3 +224,21 @@ body {
   background: linear-gradient(180deg, rgba(4, 21, 45, 0) 0%, #04152d 79.17%);
 }
 
+
+
+/* Google Login Button Styles */
+.google-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.google-login-container > div {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.google-login-container iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+}
