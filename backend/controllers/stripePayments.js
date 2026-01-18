@@ -22,50 +22,47 @@ const { default: mongoose } = require('mongoose');
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-const enrollStudents = async (courses, userId, res) => {
+const enrollStudents = async (courses, userId) => {
     if (!courses || !userId) {
-        return res.status(400).json({ success: false, message: "Please Provide data for Courses or UserId" });
+        throw new Error("Please provide data for Courses or UserId");
     }
 
     for (const courseId of courses) {
-        try {
-            const enrolledCourse = await Course.findOneAndUpdate(
-                { _id: courseId },
-                { $push: { studentsEnrolled: userId } },
-                { new: true },
-            );
+        const enrolledCourse = await Course.findOneAndUpdate(
+            { _id: courseId },
+            { $push: { studentsEnrolled: userId } },
+            { new: true },
+        );
 
-            if (!enrolledCourse) {
-                return res.status(500).json({ success: false, message: "Course not Found" });
-            }
+        if (!enrolledCourse) {
+            throw new Error("Course not found");
+        }
 
-            const courseProgress = await CourseProgress.create({
-                courseID: courseId,
-                userId: userId,
-                completedVideos: [],
-            });
+        const courseProgress = await CourseProgress.create({
+            courseID: courseId,
+            userId: userId,
+            completedVideos: [],
+        });
 
-            const enrolledStudent = await User.findByIdAndUpdate(
-                userId,
-                {
-                    $push: {
-                        courses: courseId,
-                        courseProgress: courseProgress._id,
-                    },
+        const enrolledStudent = await User.findByIdAndUpdate(
+            userId,
+            {
+                $push: {
+                    courses: courseId,
+                    courseProgress: courseProgress._id,
                 },
-                { new: true }
-            );
+            },
+            { new: true }
+        );
 
-            const emailResponse = await mailSender(
-                enrolledStudent.email,
-                `Successfully Enrolled into ${enrolledCourse.courseName}`,
-                courseEnrollmentEmail(enrolledCourse.courseName, `${enrolledStudent.firstName}`)
-            );
-        }
-        catch (error) {
-            return res.status(500).json({ success: false, message: error.message });
-        }
+        await mailSender(
+            enrolledStudent.email,
+            `Successfully Enrolled into ${enrolledCourse.courseName}`,
+            courseEnrollmentEmail(enrolledCourse.courseName, `${enrolledStudent.firstName}`)
+        );
     }
+    
+    return true;
 };
 
 exports.createStripeCheckout = async (req, res) => {
@@ -172,7 +169,7 @@ exports.verifyStripePayment = async (req, res) => {
 
         const coursesId = JSON.parse(session.metadata.coursesId);
 
-        await enrollStudents(coursesId, userId, res);
+        await enrollStudents(coursesId, userId);
 
         return res.status(200).json({
             success: true,
@@ -314,7 +311,9 @@ exports.verifyUPIPayment = async (req, res) => {
         console.log('✅ Payment accepted, enrolling student...');
 
         // Enroll student in courses
-        await enrollStudents(coursesId, userId, res);
+        await enrollStudents(coursesId, userId);
+
+        console.log('✅ Enrollment completed successfully!');
 
         return res.status(200).json({
             success: true,
