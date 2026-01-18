@@ -27,41 +27,64 @@ const enrollStudents = async (courses, userId) => {
         throw new Error("Please provide data for Courses or UserId");
     }
 
+    console.log(`📚 Starting enrollment for ${courses.length} course(s)...`);
+
     for (const courseId of courses) {
-        const enrolledCourse = await Course.findOneAndUpdate(
-            { _id: courseId },
-            { $push: { studentsEnrolled: userId } },
-            { new: true },
-        );
+        try {
+            console.log(`Processing course: ${courseId}`);
+            
+            const enrolledCourse = await Course.findOneAndUpdate(
+                { _id: courseId },
+                { $push: { studentsEnrolled: userId } },
+                { new: true },
+            );
 
-        if (!enrolledCourse) {
-            throw new Error("Course not found");
-        }
+            if (!enrolledCourse) {
+                throw new Error(`Course not found: ${courseId}`);
+            }
 
-        const courseProgress = await CourseProgress.create({
-            courseID: courseId,
-            userId: userId,
-            completedVideos: [],
-        });
+            console.log(`✅ Added student to course: ${enrolledCourse.courseName}`);
 
-        const enrolledStudent = await User.findByIdAndUpdate(
-            userId,
-            {
-                $push: {
-                    courses: courseId,
-                    courseProgress: courseProgress._id,
+            const courseProgress = await CourseProgress.create({
+                courseID: courseId,
+                userId: userId,
+                completedVideos: [],
+            });
+
+            console.log(`📊 Created course progress`);
+
+            const enrolledStudent = await User.findByIdAndUpdate(
+                userId,
+                {
+                    $push: {
+                        courses: courseId,
+                        courseProgress: courseProgress._id,
+                    },
                 },
-            },
-            { new: true }
-        );
+                { new: true }
+            );
 
-        await mailSender(
-            enrolledStudent.email,
-            `Successfully Enrolled into ${enrolledCourse.courseName}`,
-            courseEnrollmentEmail(enrolledCourse.courseName, `${enrolledStudent.firstName}`)
-        );
+            console.log(`👤 Updated student profile`);
+
+            // Send enrollment email (don't fail if email fails)
+            try {
+                await mailSender(
+                    enrolledStudent.email,
+                    `Successfully Enrolled into ${enrolledCourse.courseName}`,
+                    courseEnrollmentEmail(enrolledCourse.courseName, `${enrolledStudent.firstName}`)
+                );
+                console.log(`📧 Enrollment email sent`);
+            } catch (emailError) {
+                console.error(`⚠️ Email sending failed (non-critical):`, emailError.message);
+                // Don't throw - email failure shouldn't stop enrollment
+            }
+        } catch (error) {
+            console.error(`❌ Error enrolling in course ${courseId}:`, error);
+            throw error;
+        }
     }
     
+    console.log(`🎉 All enrollments completed successfully!`);
     return true;
 };
 
@@ -291,8 +314,10 @@ exports.verifyUPIPayment = async (req, res) => {
         console.log('Order ID:', orderId);
         console.log('Transaction ID:', transactionId);
         console.log('User ID:', userId);
+        console.log('Courses:', coursesId);
 
         if (!orderId || !transactionId) {
+            console.log('❌ Missing payment details');
             return res.status(400).json({
                 success: false,
                 message: "Missing payment details"
@@ -300,6 +325,7 @@ exports.verifyUPIPayment = async (req, res) => {
         }
 
         if (!coursesId || coursesId.length === 0) {
+            console.log('❌ Missing course information');
             return res.status(400).json({
                 success: false,
                 message: "Missing course information"
@@ -323,9 +349,10 @@ exports.verifyUPIPayment = async (req, res) => {
 
     } catch (error) {
         console.error('❌ UPI verification error:', error);
+        console.error('Error stack:', error.stack);
         return res.status(500).json({
             success: false,
-            message: "Payment verification failed",
+            message: error.message || "Payment verification failed",
             error: error.message
         });
     }
