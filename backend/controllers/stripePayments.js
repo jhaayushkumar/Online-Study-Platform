@@ -208,18 +208,32 @@ exports.handleStripeWebhook = async (req, res) => {
 };
 
 exports.createUPIOrder = async (req, res) => {
-    const { coursesId } = req.body;
-    const userId = req.user.id;
+    try {
+        const { coursesId } = req.body;
+        const userId = req.user.id;
 
-    if (!coursesId || coursesId.length === 0) {
-        return res.json({ success: false, message: "Please provide Course Id" });
-    }
+        console.log('🎯 Creating UPI Order');
+        console.log('Courses:', coursesId);
+        console.log('User ID:', userId);
 
-    let totalAmount = 0;
-    let courseNames = [];
+        if (!coursesId || coursesId.length === 0) {
+            return res.status(400).json({ success: false, message: "Please provide Course Id" });
+        }
 
-    for (const course_id of coursesId) {
-        try {
+        // Check if UPI_ID is configured
+        const upiId = process.env.UPI_ID;
+        if (!upiId) {
+            console.error('❌ UPI_ID not configured in environment variables');
+            return res.status(500).json({
+                success: false,
+                message: "UPI payment not configured. Please contact support."
+            });
+        }
+
+        let totalAmount = 0;
+        let courseNames = [];
+
+        for (const course_id of coursesId) {
             const course = await Course.findById(course_id);
             if (!course) {
                 return res.status(404).json({ success: false, message: "Could not find the course" });
@@ -232,25 +246,15 @@ exports.createUPIOrder = async (req, res) => {
 
             totalAmount += course.price;
             courseNames.push(course.courseName);
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ success: false, message: error.message });
         }
-    }
 
-    try {
         const orderId = `ORDER_${Date.now()}_${userId}`;
-
         const user = await User.findById(userId);
 
-        const upiId = process.env.UPI_ID;
-        if (!upiId) {
-            return res.status(500).json({
-                success: false,
-                message: "UPI payment not configured. Please contact support."
-            });
-        }
         const upiIntent = `upi://pay?pa=${upiId}&pn=StudyX&am=${totalAmount}&cu=INR&tn=${encodeURIComponent('Course Payment - ' + courseNames.join(', '))}&tr=${orderId}`;
+
+        console.log('✅ UPI Order Created:', orderId);
+        console.log('💰 Amount:', totalAmount, 'INR');
 
         res.status(200).json({
             success: true,
@@ -265,6 +269,7 @@ exports.createUPIOrder = async (req, res) => {
         });
 
     } catch (error) {
+        console.error('❌ UPI Order Error:', error);
         return res.status(500).json({
             success: false,
             message: "Could not create UPI order",
