@@ -17,7 +17,7 @@ router.post('/verifyStripePayment', auth, isStudent, verifyStripePayment);
 
 // UPI payment routes
 router.post('/createUPIOrder', auth, isStudent, createUPIOrder);
-router.post('/verifyUPIPayment', auth, isStudent, verifyUPIPayment);
+router.post('/verifyUPIPayment', auth, verifyUPIPayment);
 router.get('/checkPaymentStatus/:orderId', auth, checkPaymentStatus);
 
 // Webhook endpoint (no auth middleware, Stripe will verify via signature)
