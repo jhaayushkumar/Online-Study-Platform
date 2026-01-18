@@ -6,7 +6,8 @@ const {
     verifyStripePayment,
     handleStripeWebhook,
     createUPIOrder,
-    verifyUPIPayment
+    verifyUPIPayment,
+    checkPaymentStatus
 } = require('../controllers/stripePayments');
 const { auth, isAdmin, isInstructor, isStudent } = require('../middleware/auth');
 
@@ -17,6 +18,7 @@ router.post('/verifyStripePayment', auth, isStudent, verifyStripePayment);
 // UPI payment routes
 router.post('/createUPIOrder', auth, isStudent, createUPIOrder);
 router.post('/verifyUPIPayment', auth, isStudent, verifyUPIPayment);
+router.get('/checkPaymentStatus/:orderId', auth, checkPaymentStatus);
 
 // Webhook endpoint (no auth middleware, Stripe will verify via signature)
 router.post('/webhook/stripe', express.raw({ type: 'application/json' }), handleStripeWebhook);

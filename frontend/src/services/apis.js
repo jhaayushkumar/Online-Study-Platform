@@ -32,6 +32,9 @@ export const studentEndpoints = {
   STRIPE_CHECKOUT_API: BASE_URL + "/payment/createStripeCheckout",
   STRIPE_VERIFY_API: BASE_URL + "/payment/verifyStripePayment",
   SEND_PAYMENT_SUCCESS_EMAIL_API: BASE_URL + "/payment/sendPaymentSuccessEmail",
+  UPI_ORDER_API: BASE_URL + "/payment/createUPIOrder",
+  UPI_VERIFY_API: BASE_URL + "/payment/verifyUPIPayment",
+  CHECK_PAYMENT_STATUS_API: BASE_URL + "/payment/checkPaymentStatus",
 }
 
 // COURSE ENDPOINTS

@@ -304,3 +304,29 @@ exports.verifyUPIPayment = async (req, res) => {
         });
     }
 };
+
+exports.checkPaymentStatus = async (req, res) => {
+    const { orderId } = req.params;
+    const userId = req.user.id;
+
+    console.log('🔍 Checking payment status for order:', orderId);
+
+    try {
+        // For UPI payments, we return pending status
+        // In production, you would check with your payment gateway
+        return res.status(200).json({
+            success: true,
+            isPaid: false,
+            orderStatus: 'pending',
+            message: 'UPI payment verification is manual. Please complete payment and verify.'
+        });
+
+    } catch (error) {
+        console.error('❌ Status check error:', error);
+        return res.status(500).json({
+            success: false,
+            message: "Could not check payment status",
+            error: error.message
+        });
+    }
+};

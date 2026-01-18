@@ -3,6 +3,8 @@ import { QRCodeSVG } from 'qrcode.react';
 import { X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { apiConnector } from '../../../services/apiConnector';
 
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+
 const QRPaymentModal = ({ onClose, amount, courseName, orderId, upiIntent }) => {
     const [paymentStatus, setPaymentStatus] = useState('pending'); // pending, success, failed
     const [isPolling, setIsPolling] = useState(true);
@@ -15,7 +17,7 @@ const QRPaymentModal = ({ onClose, amount, courseName, orderId, upiIntent }) => 
             try {
                 const response = await apiConnector(
                     'GET',
-                    `/api/v1/payment/checkPaymentStatus/${orderId}`,
+                    `${BASE_URL}/payment/checkPaymentStatus/${orderId}`,
                     null,
                     {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
