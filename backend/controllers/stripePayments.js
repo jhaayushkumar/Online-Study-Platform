@@ -274,15 +274,6 @@ exports.createUPIOrder = async (req, res) => {
             coursesId: coursesId,
             userId: userId
         });
-            orderId: orderId,
-            amount: totalAmount,
-            currency: 'INR',
-            upiIntent: upiIntent,
-            courseNames: courseNames,
-            message: 'UPI payment order created successfully',
-            coursesId: coursesId,
-            userId: userId
-        });
 
     } catch (error) {
         console.error('❌ UPI Order Error:', error);
