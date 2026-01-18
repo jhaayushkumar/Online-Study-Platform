@@ -425,6 +425,8 @@ function CourseDetails() {
           courseName={paymentData.courseNames?.join(', ') || courseName}
           orderId={paymentData.orderId}
           upiIntent={paymentData.upiIntent}
+          coursesId={paymentData.coursesId}
+          upiId={paymentData.upiId}
         />
       )}
     </>
