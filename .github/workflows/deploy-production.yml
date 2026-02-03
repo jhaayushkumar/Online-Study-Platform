@@ -1,0 +1,89 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'frontend') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./frontend
+      run: npm ci
+    
+    - name: Build frontend
+      working-directory: ./frontend
+      run: npm run build
+      env:
+        VITE_APP_BASE_URL: ${{ secrets.VITE_APP_BASE_URL }}
+        VITE_APP_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_APP_STRIPE_PUBLISHABLE_KEY }}
+    
+    - name: Deploy to Vercel/Netlify
+      run: |
+        echo "🚀 Frontend build completed"
+        echo "📦 Deploy to your hosting platform (Vercel/Netlify)"
+        echo "💡 Add deployment step based on your hosting provider"
+    
+    # Uncomment for Vercel deployment
+    # - name: Deploy to Vercel
+    #   uses: amondnet/vercel-action@v25
+    #   with:
+    #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+    #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+    #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+    #     working-directory: ./frontend
+
+  deploy-backend:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'backend') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Deploy to Render/Railway
+      run: |
+        echo "🚀 Backend deployment triggered"
+        echo "📦 Deploy to your hosting platform (Render/Railway)"
+        echo "💡 Add deployment step based on your hosting provider"
+    
+    # Uncomment for Railway deployment
+    # - name: Deploy to Railway
+    #   uses: bervProject/railway-deploy@main
+    #   with:
+    #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
+    #     service: backend
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [deploy-frontend, deploy-backend]
+    if: always()
+    
+    steps:
+    - name: Deployment Summary
+      run: |
+        echo "### 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Author**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Time**: $(date)" >> $GITHUB_STEP_SUMMARY
