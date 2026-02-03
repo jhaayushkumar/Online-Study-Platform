@@ -20,7 +20,7 @@ const CourseProgress = require("../models/courseProgress");
 
 const { default: mongoose } = require('mongoose');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const enrollStudents = async (courses, userId) => {
     if (!courses || !userId) {
