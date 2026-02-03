@@ -1,55 +1,58 @@
 /**
  * @file App.jsx
- * @description Main application component with routing and layout configuration
+ * @description Main application component with optimized routing and lazy loading
  * @module App
  * 
- * Configures React Router routes for all pages including public routes,
- * protected routes for authenticated users, and role-based routes for
- * students and instructors. Includes navbar, scroll-to-top functionality,
- * and token cleanup for malformed localStorage data.
+ * Configures React Router routes with code splitting for faster page loads.
+ * Uses React.lazy() for route-based code splitting and Suspense for loading states.
+ * Includes navbar, scroll-to-top functionality, and token cleanup.
  */
 
-import { useEffect, useState } from "react";
-import { Route, Routes, useLocation, Link } from "react-router-dom";
+import { useEffect, useState, lazy, Suspense } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import Home from "./pages/Home"
-import Login from "./pages/Login"
-import Signup from "./pages/Signup"
-import ForgotPassword from "./pages/ForgotPassword";
-import UpdatePassword from "./pages/UpdatePassword";
-import VerifyEmail from "./pages/VerifyEmail";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import PageNotFound from "./pages/PageNotFound";
-import CourseDetails from './pages/CourseDetails';
-import Catalog from './pages/Catalog';
-import PaymentSuccess from './pages/PaymentSuccess';
-import PaymentCancel from './pages/PaymentCancel';
-
+// Eager load critical components
 import Navbar from "./components/common/Navbar"
-
 import OpenRoute from "./components/core/Auth/OpenRoute"
 import ProtectedRoute from "./components/core/Auth/ProtectedRoute";
-
-import Dashboard from "./pages/Dashboard";
-import MyProfile from "./components/core/Dashboard/MyProfile";
-import Settings from "./components/core/Dashboard/Settings/Settings";
-import MyCourses from './components/core/Dashboard/MyCourses';
-import EditCourse from './components/core/Dashboard/EditCourse/EditCourse';
-import Instructor from './components/core/Dashboard/Instructor';
-
-
-import Cart from "./components/core/Dashboard/Cart/Cart";
-import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
-import AddCourse from "./components/core/Dashboard/AddCourse/AddCourse";
-
-import ViewCourse from "./pages/ViewCourse";
-import VideoDetails from './components/core/ViewCourse/VideoDetails';
-
 import { ACCOUNT_TYPE } from './utils/constants';
-
 import { HiArrowNarrowUp } from "react-icons/hi"
+
+// Lazy load pages for code splitting
+const Home = lazy(() => import("./pages/Home"))
+const Login = lazy(() => import("./pages/Login"))
+const Signup = lazy(() => import("./pages/Signup"))
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"))
+const UpdatePassword = lazy(() => import("./pages/UpdatePassword"))
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail"))
+const About = lazy(() => import("./pages/About"))
+const Contact = lazy(() => import("./pages/Contact"))
+const PageNotFound = lazy(() => import("./pages/PageNotFound"))
+const CourseDetails = lazy(() => import("./pages/CourseDetails"))
+const Catalog = lazy(() => import("./pages/Catalog"))
+const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"))
+const PaymentCancel = lazy(() => import("./pages/PaymentCancel"))
+const Dashboard = lazy(() => import("./pages/Dashboard"))
+const ViewCourse = lazy(() => import("./pages/ViewCourse"))
+
+// Lazy load dashboard components
+const MyProfile = lazy(() => import("./components/core/Dashboard/MyProfile"))
+const Settings = lazy(() => import("./components/core/Dashboard/Settings/Settings"))
+const MyCourses = lazy(() => import("./components/core/Dashboard/MyCourses"))
+const EditCourse = lazy(() => import("./components/core/Dashboard/EditCourse/EditCourse"))
+const Instructor = lazy(() => import("./components/core/Dashboard/Instructor"))
+const Cart = lazy(() => import("./components/core/Dashboard/Cart/Cart"))
+const EnrolledCourses = lazy(() => import("./components/core/Dashboard/EnrolledCourses"))
+const AddCourse = lazy(() => import("./components/core/Dashboard/AddCourse/AddCourse"))
+const VideoDetails = lazy(() => import("./components/core/ViewCourse/VideoDetails"))
+
+// Loading component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen bg-richblack-900">
+    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-yellow-50"></div>
+  </div>
+)
 
 
 function App() {
@@ -110,119 +113,121 @@ function App() {
         <HiArrowNarrowUp />
       </button>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/about" element={<About />} />
-        <Route path="catalog/:catalogName" element={
-          <ProtectedRoute>
-            <Catalog />
-          </ProtectedRoute>
-        } />
-        <Route path="courses/:courseId" element={<CourseDetails />} />
-        <Route path="payment-success" element={<PaymentSuccess />} />
-        <Route path="payment-cancel" element={<PaymentCancel />} />
-
-        {/* Open Route - for Only Non Logged in User */}
-        <Route
-          path="signup" element={
-            <OpenRoute>
-              <Signup />
-            </OpenRoute>
-          }
-        />
-
-        <Route
-          path="login" element={
-            <OpenRoute>
-              <Login />
-            </OpenRoute>
-          }
-        />
-
-        <Route
-          path="forgot-password" element={
-            <OpenRoute>
-              <ForgotPassword />
-            </OpenRoute>
-          }
-        />
-
-        <Route
-          path="verify-email" element={
-            <OpenRoute>
-              <VerifyEmail />
-            </OpenRoute>
-          }
-        />
-
-        <Route
-          path="update-password/:id" element={
-            <OpenRoute>
-              <UpdatePassword />
-            </OpenRoute>
-          }
-        />
-
-
-
-
-        {/* Protected Route - for Only Logged in User */}
-        {/* Dashboard */}
-        <Route element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-        >
-          <Route path="dashboard/my-profile" element={<MyProfile />} />
-          <Route path="dashboard/Settings" element={<Settings />} />
-
-          {/* Route only for Students */}
-          {/* cart , EnrolledCourses */}
-          {user?.accountType === ACCOUNT_TYPE.STUDENT && (
-            <>
-              <Route path="dashboard/cart" element={<Cart />} />
-              <Route path="dashboard/enrolled-courses" element={<EnrolledCourses />} />
-            </>
-          )}
-
-          {/* Route only for Instructors */}
-          {/* add course , MyCourses, EditCourse*/}
-          {user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (
-            <>
-              <Route path="dashboard/instructor" element={<Instructor />} />
-              <Route path="dashboard/add-course" element={<AddCourse />} />
-              <Route path="dashboard/my-courses" element={<MyCourses />} />
-              <Route path="dashboard/edit-course/:courseId" element={<EditCourse />} />
-            </>
-          )}
-        </Route>
-
-
-        {/* For the watching course lectures */}
-        <Route
-          element={
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
+          <Route path="catalog/:catalogName" element={
             <ProtectedRoute>
-              <ViewCourse />
+              <Catalog />
+            </ProtectedRoute>
+          } />
+          <Route path="courses/:courseId" element={<CourseDetails />} />
+          <Route path="payment-success" element={<PaymentSuccess />} />
+          <Route path="payment-cancel" element={<PaymentCancel />} />
+
+          {/* Open Route - for Only Non Logged in User */}
+          <Route
+            path="signup" element={
+              <OpenRoute>
+                <Signup />
+              </OpenRoute>
+            }
+          />
+
+          <Route
+            path="login" element={
+              <OpenRoute>
+                <Login />
+              </OpenRoute>
+            }
+          />
+
+          <Route
+            path="forgot-password" element={
+              <OpenRoute>
+                <ForgotPassword />
+              </OpenRoute>
+            }
+          />
+
+          <Route
+            path="verify-email" element={
+              <OpenRoute>
+                <VerifyEmail />
+              </OpenRoute>
+            }
+          />
+
+          <Route
+            path="update-password/:id" element={
+              <OpenRoute>
+                <UpdatePassword />
+              </OpenRoute>
+            }
+          />
+
+
+
+
+          {/* Protected Route - for Only Logged in User */}
+          {/* Dashboard */}
+          <Route element={
+            <ProtectedRoute>
+              <Dashboard />
             </ProtectedRoute>
           }
-        >
-          {user?.accountType === ACCOUNT_TYPE.STUDENT && (
-            <Route
-              path="view-course/:courseId/section/:sectionId/sub-section/:subSectionId"
-              element={<VideoDetails />}
-            />
-          )}
-        </Route>
+          >
+            <Route path="dashboard/my-profile" element={<MyProfile />} />
+            <Route path="dashboard/Settings" element={<Settings />} />
+
+            {/* Route only for Students */}
+            {/* cart , EnrolledCourses */}
+            {user?.accountType === ACCOUNT_TYPE.STUDENT && (
+              <>
+                <Route path="dashboard/cart" element={<Cart />} />
+                <Route path="dashboard/enrolled-courses" element={<EnrolledCourses />} />
+              </>
+            )}
+
+            {/* Route only for Instructors */}
+            {/* add course , MyCourses, EditCourse*/}
+            {user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (
+              <>
+                <Route path="dashboard/instructor" element={<Instructor />} />
+                <Route path="dashboard/add-course" element={<AddCourse />} />
+                <Route path="dashboard/my-courses" element={<MyCourses />} />
+                <Route path="dashboard/edit-course/:courseId" element={<EditCourse />} />
+              </>
+            )}
+          </Route>
+
+
+          {/* For the watching course lectures */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <ViewCourse />
+              </ProtectedRoute>
+            }
+          >
+            {user?.accountType === ACCOUNT_TYPE.STUDENT && (
+              <Route
+                path="view-course/:courseId/section/:sectionId/sub-section/:subSectionId"
+                element={<VideoDetails />}
+              />
+            )}
+          </Route>
 
 
 
 
-        {/* Page Not Found (404 Page ) */}
-        <Route path="*" element={<PageNotFound />} />
+          {/* Page Not Found (404 Page ) */}
+          <Route path="*" element={<PageNotFound />} />
 
-      </Routes>
+        </Routes>
+      </Suspense>
 
     </div>
   );

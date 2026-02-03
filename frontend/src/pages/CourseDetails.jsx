@@ -288,10 +288,10 @@ function CourseDetails() {
               <p className="text-4xl font-bold text-richblack-5 sm:text-[42px]">{courseName}</p>
               <p className='text-richblack-200'>{courseDescription}</p>
               <div className="text-md flex flex-wrap items-center gap-2">
-                <span className="text-yellow-25">{avgReviewCount}</span>
+                <span className="text-yellow-25">{avgReviewCount || 0}</span>
                 <RatingStars Review_Count={avgReviewCount} Star_Size={24} />
-                <span>{`(${ratingAndReviews.length} reviews)`}</span>
-                <span>{`${studentsEnrolled.length} students enrolled`}</span>
+                <span>{`(${ratingAndReviews?.length || 0} reviews)`}</span>
+                <span>{`${studentsEnrolled?.length || 0} students enrolled`}</span>
               </div>
               <p className="capitalize "> Created By <span className="font-semibold underline">{instructor?.firstName} {instructor?.lastName}</span></p>
               <div className="flex flex-wrap gap-5 text-lg">
