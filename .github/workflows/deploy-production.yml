@@ -34,9 +34,9 @@ jobs:
     
     - name: Deploy to Vercel/Netlify
       run: |
-        echo "🚀 Frontend build completed"
-        echo "📦 Deploy to your hosting platform (Vercel/Netlify)"
-        echo "💡 Add deployment step based on your hosting provider"
+        echo "Frontend build completed"
+        echo "Deploy to your hosting platform (Vercel/Netlify)"
+        echo "Add deployment step based on your hosting provider"
     
     # Uncomment for Vercel deployment
     # - name: Deploy to Vercel
@@ -62,9 +62,9 @@ jobs:
     
     - name: Deploy to Render/Railway
       run: |
-        echo "🚀 Backend deployment triggered"
-        echo "📦 Deploy to your hosting platform (Render/Railway)"
-        echo "💡 Add deployment step based on your hosting provider"
+        echo "Backend deployment triggered"
+        echo "Deploy to your hosting platform (Render/Railway)"
+        echo "Add deployment step based on your hosting provider"
     
     # Uncomment for Railway deployment
     # - name: Deploy to Railway
@@ -81,7 +81,7 @@ jobs:
     steps:
     - name: Deployment Summary
       run: |
-        echo "### 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "### Deployment Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
         echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

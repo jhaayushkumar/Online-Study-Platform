@@ -2,7 +2,7 @@
 
 This directory contains GitHub Actions workflows for automated testing, building, and deployment.
 
-## 📋 Available Workflows
+## Available Workflows
 
 ### 1. **Frontend CI** (`frontend-ci.yml`)
 - **Trigger**: Push/PR to `main` or `develop` with frontend changes
@@ -43,7 +43,7 @@ This directory contains GitHub Actions workflows for automated testing, building
   - Deploy backend
   - Send deployment notification
 
-## 🔧 Setup Instructions
+## Setup Instructions
 
 ### Required GitHub Secrets
 
@@ -66,7 +66,7 @@ VERCEL_PROJECT_ID=xxxxx
 RAILWAY_TOKEN=xxxxx
 ```
 
-## 📝 PR Title Format
+## PR Title Format
 
 Follow conventional commits format:
 - `feat: add new feature`
@@ -79,7 +79,7 @@ Follow conventional commits format:
 - `chore: update dependencies`
 - `ci: update CI/CD`
 
-## 🚀 Manual Deployment
+## Manual Deployment
 
 Trigger manual deployment:
 1. Go to `Actions` tab
@@ -87,7 +87,7 @@ Trigger manual deployment:
 3. Click `Run workflow`
 4. Select branch and run
 
-## 📊 Workflow Status Badges
+## Workflow Status Badges
 
 Add to your main README.md:
 
@@ -97,13 +97,13 @@ Add to your main README.md:
 ![PR Checks](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/PR%20Checks/badge.svg)
 ```
 
-## 🔍 Monitoring
+## Monitoring
 
 - Check workflow runs in the `Actions` tab
 - Review build artifacts in workflow summaries
 - Monitor deployment status in hosting platform dashboards
 
-## 💡 Tips
+## Tips
 
 1. **Fast CI**: Workflows only run when relevant files change
 2. **Parallel Jobs**: Frontend and backend CI run independently
