@@ -83,15 +83,22 @@ const Home = () => {
 
     // get courses data
     const [CatalogPageData, setCatalogPageData] = useState(null);
-    const categoryID = "696956c6b23e3fb459fe71bb" // Web Development category (Live DB)
+    const [isLoading, setIsLoading] = useState(true);
+    const categoryID = "696923908bbe6bb533f64704" // Web Development category
     const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchCatalogPageData = async () => {
-
-            const result = await getCatalogPageData(categoryID, dispatch);
-            setCatalogPageData(result);
-            // console.log("page data ==== ",CatalogPageData);
+            try {
+                setIsLoading(true);
+                const result = await getCatalogPageData(categoryID, dispatch);
+                setCatalogPageData(result);
+                // console.log("page data ==== ",CatalogPageData);
+            } catch (error) {
+                console.error("Error fetching catalog data:", error);
+            } finally {
+                setIsLoading(false);
+            }
         }
         if (categoryID) {
             fetchCatalogPageData();
