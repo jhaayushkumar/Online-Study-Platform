@@ -71,7 +71,26 @@ exports.deleteAccount = async (req, res) => {
             });
         }
 
-        await deleteResourceFromCloudinary(userDetails.image);
+        if (userDetails.image && !userDetails.image.includes('api.dicebear.com')) {
+            try {
+                const urlParts = userDetails.image.split('/');
+                const versionIndex = urlParts.findIndex(part => part.startsWith('v') && !isNaN(part.substring(1)));
+
+                if (versionIndex !== -1 && versionIndex < urlParts.length - 1) {
+                    const publicIdParts = urlParts.slice(versionIndex + 1);
+                    const publicIdWithExtension = publicIdParts.join('/');
+                    const publicId = publicIdWithExtension.split('.')[0];
+                    await deleteResourceFromCloudinary(publicId);
+                } else {
+                    const parts = userDetails.image.split('/');
+                    const publicIdWithExt = parts[parts.length - 1];
+                    const publicId = publicIdWithExt.split('.')[0];
+                    await deleteResourceFromCloudinary(publicId);
+                }
+            } catch (error) {
+                console.log('Error deleting image from cloudinary during account deletion', error);
+            }
+        }
 
         const userEnrolledCoursesId = userDetails.courses
 
@@ -187,7 +206,24 @@ exports.removeUserProfileImage = async (req, res) => {
         // Optional: delete from cloudinary if it's not the default image
         if (userDetails.image && !userDetails.image.includes('api.dicebear.com')) {
             try {
-                await deleteResourceFromCloudinary(userDetails.image);
+                // Extract public ID from Cloudinary URL
+                // Example URL: https://res.cloudinary.com/cloud_name/image/upload/v1234567890/folder_name/public_id.jpg
+                const urlParts = userDetails.image.split('/');
+                const versionIndex = urlParts.findIndex(part => part.startsWith('v') && !isNaN(part.substring(1)));
+
+                if (versionIndex !== -1 && versionIndex < urlParts.length - 1) {
+                    const publicIdParts = urlParts.slice(versionIndex + 1);
+                    const publicIdWithExtension = publicIdParts.join('/');
+                    const publicId = publicIdWithExtension.split('.')[0];
+
+                    await deleteResourceFromCloudinary(publicId);
+                } else {
+                    // Fallback simpler extraction if no version
+                    const parts = userDetails.image.split('/');
+                    const publicIdWithExt = parts[parts.length - 1];
+                    const publicId = publicIdWithExt.split('.')[0];
+                    await deleteResourceFromCloudinary(publicId);
+                }
             } catch (error) {
                 console.log('Error deleting from cloudinary', error);
             }
