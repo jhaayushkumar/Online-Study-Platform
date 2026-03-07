@@ -7,12 +7,12 @@
 
 require('dotenv').config({ path: __dirname + '/.env' });
 const mongoose = require('mongoose');
-const Course = require('./models/course');
-const Category = require('./models/category');
-const User = require('./models/user');
-const Profile = require('./models/profile');
-const Section = require('./models/section');
-const SubSection = require('./models/subSection');
+const Course = require('./src/models/course');
+const Category = require('./src/models/category');
+const User = require('./src/models/user');
+const Profile = require('./src/models/profile');
+const Section = require('./src/models/section');
+const SubSection = require('./src/models/subSection');
 
 async function seedCourses() {
     try {

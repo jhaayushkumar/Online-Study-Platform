@@ -1,72 +1,68 @@
-/**
- * @file server.js
- * @description Server entry point for the StudyX backend
- * @module src/server
- * 
- * Initializes the server by connecting to MongoDB database,
- * setting up Cloudinary for media storage, and starting the Express server.
- * Includes graceful shutdown handling and error management for production.
- */
+const express = require('express')
+const app = express();
 
+// packages
+const fileUpload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
-const app = require('./app');
-const { connectDB } = require('./config/database.config');
-const { cloudinaryConnect } = require('./config/cloudinary.config');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
-const PORT = process.env.PORT || 4000;
+// connection to DB and cloudinary
+const { connectDB } = require('./config/database');
+const { cloudinaryConnect } = require('./config/cloudinary');
 
-// Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
-    console.error('UNCAUGHT EXCEPTION! Shutting down...');
-    console.error(err.name, err.message);
-    process.exit(1);
+// routes
+const userRoutes = require('./routes/user');
+const profileRoutes = require('./routes/profile');
+const paymentRoutes = require('./routes/payments');
+const courseRoutes = require('./routes/course');
+const contactRoutes = require('./routes/contact');
+
+
+// middleware 
+app.use(express.json()); // to parse json body
+app.use(cookieParser());
+app.use(
+    cors({
+        // origin: 'http://localhost:5173', // frontend link
+        origin: "*",
+        credentials: true
+    })
+);
+app.use(
+    fileUpload({
+        useTempFiles: true,
+        tempFileDir: '/tmp'
+    })
+)
+
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+    console.log(`Server Started on PORT ${PORT}`);
 });
 
-// Connect to database and start server
-const startServer = async () => {
-    try {
-        // Connect to MongoDB
-        await connectDB();
-        
-        // Connect to Cloudinary
-        cloudinaryConnect();
-        
-        // Start server
-        const server = app.listen(PORT, () => {
-            console.log(`
-╔════════════════════════════════════════════╗
-║     StudyX Backend Server Started          ║
-╠════════════════════════════════════════════╣
-║  Port: ${PORT}                               ║
-║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(24)}║
-║  Database: Connected                       ║
-║  Cloudinary: Connected                     ║
-╚════════════════════════════════════════════╝
-            `);
-        });
+// connections
+connectDB();
+cloudinaryConnect();
 
-        // Handle unhandled promise rejections
-        process.on('unhandledRejection', (err) => {
-            console.error('UNHANDLED REJECTION! Shutting down...');
-            console.error(err.name, err.message);
-            server.close(() => {
-                process.exit(1);
-            });
-        });
+// mount route
+app.use('/api/v1/auth', userRoutes);
+app.use('/api/v1/profile', profileRoutes);
+app.use('/api/v1/payment', paymentRoutes);
+app.use('/api/v1/course', courseRoutes);
+app.use('/api/v1/reach', contactRoutes);
 
-        // Graceful shutdown
-        process.on('SIGTERM', () => {
-            console.log('SIGTERM received. Shutting down gracefully...');
-            server.close(() => {
-                console.log('Process terminated.');
-            });
-        });
 
-    } catch (error) {
-        console.error('Failed to start server:', error);
-        process.exit(1);
-    }
-};
 
-startServer();
+
+// Default Route
+app.get('/', (req, res) => {
+    // console.log('Your server is up and running..!');
+    res.send(`<div>
+    This is Default Route  
+    <p>Everything is OK</p>
+    </div>`);
+})
