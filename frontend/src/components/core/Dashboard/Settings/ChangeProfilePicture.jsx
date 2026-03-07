@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { FiUpload } from "react-icons/fi"
 import { useDispatch, useSelector } from "react-redux"
 
-import { updateUserProfileImage, removeDisplayPicture } from "../../../../services/operations/SettingsAPI"
+import { updateUserProfileImage } from "../../../../services/operations/SettingsAPI"
 import IconBtn from "../../../common/IconBtn"
 import Img from './../../../common/Img';
 
@@ -55,18 +55,7 @@ export default function ChangeProfilePicture() {
     }
   }
 
-  const handleFileRemove = () => {
-    try {
-      setLoading(true)
-      dispatch(removeDisplayPicture(token)).then(() => {
-        setLoading(false)
-        setPreviewSource(null)
-        setProfileImage(null)
-      })
-    } catch (error) {
-      console.log("ERROR MESSAGE - ", error.message)
-    }
-  }
+
 
   useEffect(() => {
     if (profileImage) {
@@ -113,13 +102,7 @@ export default function ChangeProfilePicture() {
                 )}
               </IconBtn>
 
-              <button
-                onClick={handleFileRemove}
-                disabled={loading}
-                className="cursor-pointer rounded-md py-2 px-5 font-semibold bg-richblack-700 text-richblack-5 hover:bg-richblack-800 duration-300"
-              >
-                Remove
-              </button>
+
 
             </div>
           </div>
