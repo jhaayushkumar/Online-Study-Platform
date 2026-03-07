@@ -21,6 +21,7 @@ const {
   UPDATE_PROFILE_API,
   CHANGE_PASSWORD_API,
   DELETE_PROFILE_API,
+  REMOVE_DISPLAY_PICTURE_API,
 } = settingsEndpoints
 
 
@@ -59,6 +60,36 @@ export function updateUserProfileImage(token, formData) {
   }
 }
 
+// ================ remove User Profile Image  ================
+export function removeDisplayPicture(token) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Removing...")
+    try {
+      const response = await apiConnector(
+        "DELETE",
+        REMOVE_DISPLAY_PICTURE_API,
+        null,
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      )
+      console.log("REMOVE_DISPLAY_PICTURE_API API RESPONSE............", response);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message)
+      }
+      toast.success("Display Picture Removed Successfully")
+      dispatch(setUser(response.data.data));
+
+      localStorage.setItem("user", JSON.stringify(response.data.data));
+    } catch (error) {
+      console.log("REMOVE_DISPLAY_PICTURE_API API ERROR............", error)
+      toast.error("Could Not Remove Profile Picture")
+    }
+    toast.dismiss(toastId)
+  }
+}
+
 // ================ update Profile  ================
 export function updateProfile(token, formData) {
   return async (dispatch) => {
@@ -79,7 +110,7 @@ export function updateProfile(token, formData) {
 
       dispatch(setUser({ ...response.data.updatedUserDetails, image: userImage }))
 
-   
+
       // console.log('DATA = ', data)
       localStorage.setItem("user", JSON.stringify({ ...response.data.updatedUserDetails, image: userImage }));
       toast.success("Profile Updated Successfully")

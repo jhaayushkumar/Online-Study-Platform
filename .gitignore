@@ -78,3 +78,5 @@ coverage/
 # Misc
 .cache
 .parcel-cache
+.nvmrc
+.node-version

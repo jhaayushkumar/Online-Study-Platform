@@ -137,8 +137,8 @@ exports.updateUserProfileImage = async (req, res) => {
 
         const image = await uploadImageToCloudinary(
             profileImage,
-            process.env.FOLDER_NAME, 
-            1000, 
+            process.env.FOLDER_NAME,
+            1000,
             1000
         );
 
@@ -169,6 +169,52 @@ exports.updateUserProfileImage = async (req, res) => {
             error: error.message,
             message: 'Error while updating user profile image',
         })
+    }
+}
+
+exports.removeUserProfileImage = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const userDetails = await User.findById(userId);
+        if (!userDetails) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Optional: delete from cloudinary if it's not the default image
+        if (userDetails.image && !userDetails.image.includes('api.dicebear.com')) {
+            try {
+                await deleteResourceFromCloudinary(userDetails.image);
+            } catch (error) {
+                console.log('Error deleting from cloudinary', error);
+            }
+        }
+
+        const defaultImage = `https://api.dicebear.com/5.x/initials/svg?seed=${userDetails.firstName} ${userDetails.lastName}`;
+
+        const updatedUserDetails = await User.findByIdAndUpdate(
+            userId,
+            { image: defaultImage },
+            { new: true }
+        ).populate('additionalDetails');
+
+        res.status(200).json({
+            success: true,
+            message: 'Profile picture removed successfully',
+            data: updatedUserDetails,
+        });
+
+    } catch (error) {
+        console.log('Error while removing user profile image');
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+            message: 'Error while removing user profile image',
+        });
     }
 }
 
