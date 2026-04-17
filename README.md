@@ -1,4 +1,4 @@
-# StudyX - Full Stack Ed-Tech Platform 📚
+# StudyX - Full Stack Ed-Tech Platform 
 
 ## Project Description 📝
 StudyX is a fully functional ed-tech platform that enables users to create, consume, and rate educational content.
@@ -10,7 +10,7 @@ The platform is built using the MERN stack, which includes ReactJS, NodeJS, Mong
 - 🔗 [LinkedIn](https://www.linkedin.com/in/ayush-kumar-5950b3323/)
 - 💻 [GitHub](https://github.com/jhaayushkumar)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js (v14 or higher)
